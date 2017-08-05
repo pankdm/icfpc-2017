@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Punter Viewer FX</title>
     <link rel="stylesheet" href="../js-core/bootstrap.min.css">
+    <link rel="stylesheet" href="../js-core/bootstrap-slider.min.css">
     <link rel="stylesheet" href="viewer.css">
   </head>
 
@@ -45,13 +46,29 @@
         <table class="settings-table">
           <tr>
             <td>
-              <button class="btn" id="prev" onclick="undoMove()" disabled>Prev</button>
+              <button class="btn" id="begin" onclick="begin()" disabled><<</button>
             </td>
             <td>
+              <button class="btn" id="prev" onclick="undoMove()" disabled><</button>
+            </td>
+            <td>
+              <button class="btn" id="playstop" onclick="playstop()" disabled>|></button>
+            </td>
+            <td>
+              <button class="btn" id="next" onclick="doMove()" disabled>></button>
+            </td>
+            <td>
+              <button class="btn" id="end" onclick="begin()" disabled>>></button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="5">
+              Speed: <b>100ms</b> <input id="speed" data-provide="slider" type="text" data-slider-min="100" data-slider-max="2000" data-slider-step="1" data-slider-value="500" data-slider-tooltip="hide"/> <b>2s</b>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="5">
               <div id="current-move"></div>
-            </td>
-            <td>
-              <button class="btn" id="next" onclick="doMove()" disabled>Next</button>
             </td>
           </tr>
         </table>
@@ -69,6 +86,7 @@
     <!--- load scripts -->
     <script src="../js-core/jquery.min.js"></script>
     <script src="../js-core/bootstrap.min.js"></script>
+    <script src="../js-core/bootstrap-slider.min.js"></script>
     <script src="../js-core/fastclick.min.js"></script>
     <script src="../js-core/cytoscape.min.js"></script>
     <script src="../js-core/bluebird.min.js"></script>

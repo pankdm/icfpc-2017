@@ -8,8 +8,8 @@ let queuedPass = false;
 
 let logfile = {};
 let logmove = 0;
+let timerId = -1;
 
-//const hostname = "129.215.197.1";
 const hostname = "127.0.0.1";
 const relayPort = 9998;
 
@@ -74,6 +74,7 @@ function enableButton(buttonId) {
 $(function() {
   $(document).ready(function() {
     enableButton('connect');
+    $("#speed").on('slide', setSpeed);
   });
 });
 
@@ -101,6 +102,10 @@ let socket = undefined;
 
 function setStatus(status) {
   $("#game-status").text(status);
+}
+
+function clearLog() {
+  document.getElementById(id).innerHTML = "";
 }
 
 function writeLog(msg) {
@@ -426,25 +431,16 @@ function playQueuedClaims() {
   ourTurn();
 }
 
-function readLogFile(input) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const data = e.target.result;
-      logfile = JSON.parse(data);
-      $("#punters").text(logfile.players);
-      $("#moves").text(logfile.moves.length);
-      renderGraph(logfile.map);
-      updatePlayerControls();
-      logmove = 0;
-    }
-    reader.readAsText(input.files[0]);
-  }
-}
-
 function updatePlayerControls() {
   toggleButton('next', logmove === logfile.moves.length);
   toggleButton('prev', logmove === 0);
+
+  toggleButton('begin', logmove === 0);
+  toggleButton('end', logmove === logfile.moves.length);
+
+  toggleButton('playstop', logmove === logfile.moves.length);
+  $("#playstop").text(timerId === -1 ? '|>' : '||');
+
   $("#current-move").text("Move #" + logmove);
 }
 
@@ -452,6 +448,7 @@ function doMove() {
   handleIncomingMove(logfile.moves[logmove++]);
 
   if (logmove === logfile.moves.length) {
+    stop();
     printFinalScores(logfile.scores);
   }
 
@@ -462,4 +459,62 @@ function undoMove() {
   rollbackIncomingMove(logfile.moves[--logmove]);
 
   updatePlayerControls();
+}
+
+function playstop() {
+  if (timerId === -1) {
+    play();
+  } else {
+    stop();
+  }
+}
+
+function play() {
+  stop();
+  timerId = setInterval(doMove, $("#speed").slider('getValue'));
+}
+
+function stop() {
+  if (timerId !== -1) {
+    clearInterval(timerId);
+    timerId = -1;
+  }
+}
+
+function begin() {
+  stop();
+  while (logmove !== 0) {
+    undoMove();
+  }
+  updatePlayerControls();
+}
+
+function end() {
+  stop();
+  while (logmove !== logfile.moves.length) {
+    doMove();
+  }
+}
+
+function setSpeed() {
+  if (timerId !== -1) {
+    play();
+  }
+}
+
+function readLogFile(input) {
+  stop();
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const data = e.target.result;
+      logfile = JSON.parse(data);
+      $("#punters").text(logfile.players);
+      $("#moves").text(logfile.moves.length);
+
+      renderGraph(logfile.map);
+      begin();
+    }
+    reader.readAsText(input.files[0]);
+  }
 }
