@@ -173,13 +173,14 @@ class GreedyPunter:
                         add_edge(self.my_graph, st)
 
         # take one at random
-        # s, t = self._select_random_edge(self.graph)
-        # print 'Move: {}, got random move {}'.format(self.num_moves, (s,t))
-
-        start = timer()
-        s, t =  self._select_greedy_edge()
-        end = timer()
-        print ('Finished select_greey_edge in {}s'.format(end - start))
+        if self.num_moves == 1:
+            s, t = self._select_random_edge(self.graph)
+            print 'Move: {}, got random move {}'.format(self.num_moves, (s,t))
+        else:
+            start = timer()
+            s, t =  self._select_greedy_edge()
+            end = timer()
+            print ('Finished select_greey_edge in {}s'.format(end - start))
 
         # add_edge(self.my_graph, (s, t))
 
