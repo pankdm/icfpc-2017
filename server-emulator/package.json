@@ -1,0 +1,29 @@
+{
+  "name": "server-emulator",
+  "version": "1.0.0",
+  "description": "ICFPC",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --harmony index.js",
+    "test": "jest",
+    "lint": "eslint . --fix"
+  },
+  "author": "",
+  "license": "WTFPL",
+  "devDependencies": {
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.3.0",
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-plugin-import": "^2.7.0",
+    "jest": "^20.0.4"
+  },
+  "dependencies": {
+    "babel-register": "^6.24.1",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "graphlib": "^2.1.1",
+    "jsonfile": "^3.0.1",
+    "winston": "^2.3.1",
+    "ws": "^3.1.0"
+  }
+}

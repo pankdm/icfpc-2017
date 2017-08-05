@@ -1,0 +1,7 @@
+{
+  "extends": "airbnb-base",
+  "rules": {
+    "no-unused-vars": [2, {"argsIgnorePattern": "^_"}],
+    "object-shorthand": 0   
+  }
+}
