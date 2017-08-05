@@ -12,8 +12,10 @@ if __name__ == "__main__":
     map_file = sys.argv[1]
 
     punters = [
-        create_punter(ChaosPunter, log=False),
-        create_punter(GreedyPunter),
+        create_punter(ChaosPunter, log=False, name="ChaosPunter 1"),
+        create_punter(GreedyPunter, log=False, name="GreedyPunter 1"),
+        create_punter(ChaosPunter, log=False, name="ChaosPunter 2"),
+        create_punter(GreedyPunter, log=False, name="GreedyPunter 2"),
     ]
 
     s = Server(punters, map_file)

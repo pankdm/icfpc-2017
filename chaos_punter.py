@@ -9,7 +9,7 @@ from graph_util import *
 
 class ChaosPunter:
     def __init__(self, config):
-        self.name = "chaos monkey"
+        self.name = "chaos monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
         print('Created ChaosPunter with: {}'.format(self.config.log))
@@ -57,8 +57,10 @@ class ChaosPunter:
         return reply
 
     def process_stop(self, data):
-        if self.config.log:
-            print('GAME OVER!')
+        if not self.config.log:
+            return None
+        
+        print('GAME OVER!')
         scores = {}
         result = []
         for score_data in data["scores"]:

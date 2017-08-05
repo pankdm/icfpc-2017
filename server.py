@@ -83,12 +83,14 @@ class Server:
 
     def run(self):
         n = len(self.punters)
+        punter_id2name = {}
         for index, p in enumerate(self.punters):
             data = {
                 "punter": index,
                 "punters": n,
                 "map": deepcopy(self.js_map)
             }
+            punter_id2name[index] = p.get_handshake()["me"]
             # Ignore reply for now
             p.process_setup(data)
 
@@ -127,3 +129,18 @@ class Server:
         }
         for p in self.punters:
             p.process_move(data)
+
+        print('GAME OVER ON SERVER!')
+        result = []
+        for score_data in scores:
+            punter_id = score_data["punter"]
+            score = score_data["score"]
+            result.append( (score, punter_id) )
+
+        result.sort(reverse=True)
+        place = 1
+        for score, punter_id in result:
+            print('{} --> punter {} with {} score'.format(
+                place, punter_id2name[punter_id], score))
+            place += 1
+

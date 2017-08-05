@@ -20,7 +20,7 @@ def compute_score(graph, mines, distances):
 
 class GreedyPunter:
     def __init__(self, config):
-        self.name = "greedy monkey"
+        self.name = "greedy monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
 
@@ -82,6 +82,9 @@ class GreedyPunter:
         return reply
 
     def process_stop(self, data):
+        if not self.config.log:
+            return None
+
         print('GAME OVER!')
         scores = {}
         result = []
