@@ -13,10 +13,19 @@ def compute_score(components, mines, distances):
     total_score = 0
     for mine in mines:
         for fn in components.components()[mine]:
-            d = distances.get(mine, {}).get(fn, 0)
+            d = distances.get(fn, {}).get(mine, 0)
             total_score += d * d
     return total_score
 
+
+def compute_score_slow(graph, mines, distances):
+    total_score = 0
+    for mine in mines:
+        scores = run_bfs(mine, graph)
+        for target in scores:
+            d = distances.get(target, {}).get(mine, 0)
+            total_score += d * d
+    return total_score
 
 
 class FastGreedyPunter:
@@ -133,18 +142,35 @@ class FastGreedyPunter:
         best_score = None
         best_st = None
         for st in all_edges:
-            if self.components.component(st[0]) != self.components.component(st[1]):
+            s, t = st
+            if self.components.component(s) != self.components.component(t):
                 self.components.start_transaction()
-                self.components.union(st[0], st[1])
+                self.components.union(s, t)
                 score = compute_score(self.components, self.mines, self.distances)
+
+                if self.config.log:
+                    my_graph_copy = deepcopy(self.my_graph)
+                    add_edge(my_graph_copy, st)
+                    slow_score = compute_score_slow(my_graph_copy, self.mines, self.distances)
+                    if score != slow_score:
+                        print "ERROR: different score for {}, {} vs {} (slow)".format(
+                            st, score, slow_score)
+
                 if best_score is None or score > best_score:
                     best_score = score
                     best_st = st
                 self.components.rollback_transaction()
 
         if self.config.log:
-            print('Found {} that would give score {}'.format(st, best_score))
-        return st
+            print('Found {} that would give score {}'.format(best_st, best_score))
+
+        if best_score is None:
+            # choose random if nothing found
+            index = random.randint(0, len(all_edges) - 1)
+            st = all_edges[index]
+            return st
+
+        return best_st
 
 
     def process_move(self, data):
@@ -172,6 +198,9 @@ class FastGreedyPunter:
                     if punter_id == self.punter_id:
                         add_edge(self.my_graph, st)
 
+                        self.components.start_transaction()
+                        self.components.union(s, t)
+
         # take one at random
         if self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
@@ -183,11 +212,6 @@ class FastGreedyPunter:
             end = timer()
             if self.config.log:
                 print ('Finished select_greey_edge in {}s'.format(end - start))
-
-        self.components.start_transaction()
-        self.components.union(s, t)
-
-        # add_edge(self.my_graph, (s, t))
 
         return {
             "claim": {

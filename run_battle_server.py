@@ -28,7 +28,7 @@ class Stats:
         for punter in sorted(self.total_score):
             avg = self.total_score[punter] * 1.0 / self.num_rounds
             avg_rank = self.total_rank[punter] * 1.0 / self.num_rounds
-            output += ' | {}: {:.2f} ({:.2f} rank)'.format(punter, avg, avg_ran)
+            output += ' | {}: {:.2f} ({:.2f} rank)'.format(punter, avg, avg_rank)
         print 'Round {} ### {}'.format(self.num_rounds, output)
 
 
@@ -45,8 +45,8 @@ def run_battle(stats):
     random.seed(seed)
 
     punters = [
-        create_punter(ChaosPunter, log=False, name="Chaos 1"),
-        create_punter(FastGreedyPunter, log=False, name="Fast 4"),
+        # create_punter(ChaosPunter, log=False, name="Chaos 1"),
+        create_punter(GreedyPunter, log=False, name="Greedy 4"),
         # create_punter(ChaosPunter, log=False, name="Chaos 2"),
         # create_punter(ChaosPunter, log=False, name="Chaos 3"),
         # create_punter(ChaosPunter, log=False, name="Chaos 4"),
@@ -54,7 +54,7 @@ def run_battle(stats):
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 2"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 3"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 4"),
-        # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 1"),
+        create_punter(FastGreedyPunter, log=False, name="Fast 1"),
         # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 2"),
         # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 3"),
     ]

@@ -6,6 +6,8 @@ from pprint import pprint
 from timeit import default_timer as timer
 
 from graph_util import *
+from config import *
+from client import *
 
 def compute_score(graph, mines, distances):
     total_score = 0
@@ -29,8 +31,9 @@ class GreedyPunter:
 
 
     def process_setup(self, data):
-        print("Processing setup:")
-        pprint(data)
+        if self.config.log:
+            print("Processing setup:")
+            pprint(data)
 
         self.punter_id = data["punter"]
         self.num_punters = data["punters"]
@@ -61,9 +64,10 @@ class GreedyPunter:
             for city, score in scores.items():
                 self.distances[city][mine] = score
 
-        print('Calculated distances')
-        for city, scores in sorted(self.distances.items()):
-            print('{} -> {}'.format(city, scores))
+        if self.config.log:
+            print('Calculated distances')
+            for city, scores in sorted(self.distances.items()):
+                print('{} -> {}'.format(city, scores))
 
         # maintain graph of our nodes
         self.my_graph = defaultdict(set)
@@ -144,14 +148,16 @@ class GreedyPunter:
                 best_score = score
                 best_st = st
 
-        print('Found {} that would give score {}'.format(st, best_score))
-        return st
+        if self.config.log:
+            print('Found {} that would give score {}'.format(best_st, best_score))
+        return best_st
 
 
     def process_move(self, data):
-        print ''
-        print("Processing move:")
-        pprint(data)
+        if self.config.log:
+            print ''
+            print("Processing move:")
+            pprint(data)
 
 
         self.num_moves += 1
@@ -175,12 +181,14 @@ class GreedyPunter:
         # take one at random
         if self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
-            print 'Move: {}, got random move {}'.format(self.num_moves, (s,t))
+            if self.config.log:
+                print 'Move: {}, got random move {}'.format(self.num_moves, (s,t))
         else:
             start = timer()
             s, t =  self._select_greedy_edge()
             end = timer()
-            print ('Finished select_greey_edge in {}s'.format(end - start))
+            if self.config.log:
+                print ('Finished select_greey_edge in {}s'.format(end - start))
 
         # add_edge(self.my_graph, (s, t))
 
@@ -191,3 +199,11 @@ class GreedyPunter:
                 "target": t,
             },
         }
+
+if __name__ == "__main__":
+    config = Config()
+    config.log = True
+
+    punter = GreedyPunter(config)
+    client = Client(LOCALHOST, 9999)
+    client.run(punter)
