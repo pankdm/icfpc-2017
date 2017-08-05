@@ -100,14 +100,14 @@ class Server:
     def run(self):
         n = len(self.punters)
         punter_id2name = {}
-        for index, p in enumerate(self.punters):
+        for p_index, p in enumerate(self.punters):
             data = {
                 "punter": p_index,
                 "punters": n,
                 "map": deepcopy(self.js_map),
                 "settings": self.settings,
             }
-            punter_id2name[index] = p.get_handshake()["me"]
+            punter_id2name[p_index] = p.get_handshake()["me"]
             # Ignore reply for now
             reply = p.process_setup(data)
             futures = reply.get("futures", [])
