@@ -4,7 +4,8 @@ import random
 
 from pprint import pprint
 from timeit import default_timer as timer
-from graph_util import run_bfs, add_edge
+
+from graph_util import *
 
 def compute_score(graph, mines, distances):
     total_score = 0
@@ -19,13 +20,12 @@ def compute_score(graph, mines, distances):
 
 class GreedyPunter:
     def __init__(self, config):
-        self.name = "chaos monkey"
+        self.name = "greedy monkey"
         self.num_moves = 0
         self.config = config
 
     def get_handshake(self):
-        return {"me": self.name
-        }
+        return {"me": self.name}
 
 
     def process_setup(self, data):
@@ -146,6 +146,7 @@ class GreedyPunter:
 
 
     def process_move(self, data):
+        print ''
         print("Processing move:")
         pprint(data)
 
@@ -155,20 +156,18 @@ class GreedyPunter:
         if "stop" in data:
             return self.process_stop(data["stop"])
 
-        if "move" not in data:
-            return {
-                "pass": {
-                    "punter": self.punter_id,
-                },
-            }
-
         # update the available edges
-        for move in data["move"]["moves"]:
-            if "claim" in move:
-                s = move["claim"]["source"]
-                t = move["claim"]["target"]
-                self.graph[s].remove(t)
-                self.graph[t].remove(s)
+        if "move" in data:
+            for move in data["move"]["moves"]:
+                if "claim" in move:
+                    s = move["claim"]["source"]
+                    t = move["claim"]["target"]
+                    st = (s,t)
+                    remove_edge(self.graph, st)
+
+                    punter_id = move["claim"]["punter"]
+                    if punter_id == self.punter_id:
+                        add_edge(self.my_graph, st)
 
         # take one at random
         # s, t = self._select_random_edge(self.graph)
@@ -179,7 +178,7 @@ class GreedyPunter:
         end = timer()
         print ('Finished select_greey_edge in {}s'.format(end - start))
 
-        add_edge(self.my_graph, (s, t))
+        # add_edge(self.my_graph, (s, t))
 
         return {
             "claim": {

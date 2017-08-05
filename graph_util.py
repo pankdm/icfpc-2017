@@ -7,6 +7,11 @@ def add_edge(graph, st):
     graph[s].add(t)
     graph[t].add(s)
 
+def remove_edge(graph, st):
+    s, t = st
+    graph[s].remove(t)
+    graph[t].remove(s)
+
 
 class World:
     def __init__(self, map_data):

@@ -5,6 +5,8 @@ from pprint import pprint
 
 from config import Config
 
+from graph_util import *
+
 class ChaosPunter:
     def __init__(self, config):
         self.name = "chaos monkey"
@@ -101,25 +103,23 @@ class ChaosPunter:
         return (s, t)
 
     def process_move(self, data):
+        if self.config.log:
+            print ''
+            print("Processing move:")
+            pprint(data)
+
         self.num_moves += 1
         # check if this is stop message:
         if "stop" in data:
             return self.process_stop(data["stop"])
 
-        if "move" not in data:
-            return {
-                "pass": {
-                    "punter": self.punter_id,
-                },
-            }
-
         # update the available edges
-        for move in data["move"]["moves"]:
-            if "claim" in move:
-                s = move["claim"]["source"]
-                t = move["claim"]["target"]
-                self.graph[s].remove(t)
-                self.graph[t].remove(s)
+        if "move" in data:
+            for move in data["move"]["moves"]:
+                if "claim" in move:
+                    s = move["claim"]["source"]
+                    t = move["claim"]["target"]
+                    remove_edge(self.graph, (s,t))
 
         # take one at random
         s, t = self._select_random_edge(self.graph)

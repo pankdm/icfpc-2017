@@ -94,9 +94,9 @@ class Server:
 
         num_moves = 0
         while num_moves < self.total_moves:
-            print
-            print '{}/{} == next round =='.format(num_moves + 1, self.total_moves)
             for p_index, p in enumerate(self.punters):
+                print
+                print '{}/{} == next round =='.format(num_moves + 1, self.total_moves)
                 moves = []
                 for punter_id, move in self.previous_moves.items():
                     moves.append(move)

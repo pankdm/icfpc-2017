@@ -1,13 +1,16 @@
 from __future__ import print_function
 
 
-from punter import Punter
+from chaos_punter import ChaosPunter
 from greedy_punter import GreedyPunter
+
+from config import Config
 
 import socket
 import sys
 import json
 import pprint
+
 
 SERVER = "punter.inf.ed.ac.uk"
 BUFFER_SIZE = 1024
@@ -48,8 +51,8 @@ class Client:
         # print 'parsing json: {}'.format(buffer)
         js = json.loads(buffer)
 
-        print('got message:')
-        pprint.pprint(js)
+        # print('got message:')
+        # pprint.pprint(js)
         return js
 
 
@@ -80,8 +83,11 @@ class Client:
 
 if __name__ == "__main__":
     port = int(sys.argv[1])
-    punter = Punter()
-    punter = GreedyPunter()
+    config = Config()
+    config.log = True
+
+    # punter = ChaosPunter(config)
+    punter = GreedyPunter(config)
 
     client = Client(port)
     client.run(punter)
