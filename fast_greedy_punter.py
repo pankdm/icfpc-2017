@@ -6,19 +6,19 @@ from pprint import pprint
 from timeit import default_timer as timer
 
 from graph_util import *
+from union_find import *
 
-def compute_score(graph, mines, distances):
+def compute_score(components, mines, distances):
     total_score = 0
     for mine in mines:
-        scores = run_bfs(mine, graph)
-        for target in scores:
-            d = distances.get(target, {}).get(mine, 0)
+        for fn in components.components()[mine]:
+            d = distances.get(mine, {}).get(fn, 0)
             total_score += d * d
     return total_score
 
 
 
-class GreedyPunter:
+class FastGreedyPunter:
     def __init__(self, config):
         self.name = "greedy monkey" if not config.name else config.name
         self.num_moves = 0
@@ -37,6 +37,7 @@ class GreedyPunter:
 
         map_data = data["map"]
         self.graph = defaultdict(set)
+        n = 0
         for river in map_data["rivers"]:
             s = river["source"]
             t = river["target"]
@@ -47,7 +48,11 @@ class GreedyPunter:
 
             self.graph[s].add(t)
             self.graph[t].add(s)
+            n = max(n, s)
+            n = max(n, t)
+        n += 1
         self.graph_readonly = deepcopy(self.graph)
+        self.components = ComponentsList(n)
 
         self.mines = set()
         for mine in map_data["mines"]:
@@ -137,12 +142,14 @@ class GreedyPunter:
         best_score = None
         best_st = None
         for st in all_edges:
-            my_graph_copy = deepcopy(self.my_graph)
-            add_edge(my_graph_copy, st)
-            score = compute_score(my_graph_copy, self.mines, self.distances)
-            if best_score is None or score > best_score:
-                best_score = score
-                best_st = st
+            if self.components.component(st[0]) != self.components.component(st[1]):
+                self.components.start_transaction()
+                self.components.union(st[0], st[1])
+                score = compute_score(self.components, self.mines, self.distances)
+                if best_score is None or score > best_score:
+                    best_score = score
+                    best_st = st
+                self.components.rollback_transaction()
 
         print('Found {} that would give score {}'.format(st, best_score))
         return st
@@ -175,12 +182,15 @@ class GreedyPunter:
         # take one at random
         if self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
-            print 'Move: {}, got random move {}'.format(self.num_moves, (s,t))
+            print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
         else:
             start = timer()
             s, t =  self._select_greedy_edge()
             end = timer()
             print ('Finished select_greey_edge in {}s'.format(end - start))
+
+        self.components.start_transaction()
+        self.components.union(s, t)
 
         # add_edge(self.my_graph, (s, t))
 
