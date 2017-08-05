@@ -1,5 +1,8 @@
 import winston from 'winston';
 import { Graph, alg, json } from 'graphlib';
+import jsonfile from 'jsonfile';
+import moment from 'moment';
+import mkdirp from 'mkdirp';
 
 export default class Engine {
   constructor(map, players) {
@@ -122,8 +125,29 @@ export default class Engine {
       client.disconnect();
     }
 
-    this.graphs.length = 0;
-    this.moves.length = 0;
+    const dump = {
+      map: this.map,
+      players: this.players,
+      moves: this.moves,
+    };
+    const log = `logs/${moment().format()}.json`;
+    mkdirp('logs', (err) => {
+      if (err) {
+        winston.error(err);
+        this.graphs.length = 0;
+        this.moves.length = 0;
+      } else {
+        jsonfile.writeFile(log, dump, { spaces: 2 }, (innerr) => {
+          if (innerr) {
+            winston.error(innerr);
+          } else {
+            winston.info(`log file ${log} has been saved!`);
+          }
+          this.graphs.length = 0;
+          this.moves.length = 0;
+        });
+      }
+    });
   }
 
   doMove(move) {
