@@ -140,7 +140,7 @@ class Server:
         result.sort(reverse=True)
         place = 1
         for score, punter_id in result:
-            print('{} --> punter {} with {} score'.format(
+            print('{} --> punter \'{}\' with {} score'.format(
                 place, punter_id2name[punter_id], score))
             place += 1
 
