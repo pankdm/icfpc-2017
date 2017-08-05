@@ -7,6 +7,7 @@ from timeit import default_timer as timer
 
 from graph_util import *
 from union_find import *
+from client import *
 
 def compute_score(components, mines, distances):
     total_score = 0
@@ -195,3 +196,11 @@ class FastGreedyPunter:
                 "target": t,
             },
         }
+
+if __name__ == "__main__":
+    config = Config()
+    config.log = True
+
+    punter = FastGreedyPunter(config)
+    client = Client(LOCALHOST, 9999)
+    client.run(punter)

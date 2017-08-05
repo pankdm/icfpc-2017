@@ -9,7 +9,8 @@ from config import create_punter
 import random
 import sys
 
-if __name__ == "__main__":
+
+def run_battle():
     map_file = sys.argv[1]
 
     if len(sys.argv) > 2:
@@ -18,8 +19,6 @@ if __name__ == "__main__":
         seed = random.randint(0, 1000)
     print 'Running with seed: {}'.format(seed)
     random.seed(seed)
-
-
 
     punters = [
         create_punter(ChaosPunter, log=False, name="ChaosPunter 1"),
@@ -40,5 +39,9 @@ if __name__ == "__main__":
     }
 
     s = Server(punters, map_file, settings)
-
     s.run()
+
+
+if __name__ == "__main__":
+    while True:
+        run_battle()

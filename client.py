@@ -9,14 +9,16 @@ from config import Config
 import socket
 import sys
 import json
-import pprint
 
+from pprint import pprint
 
 SERVER = "punter.inf.ed.ac.uk"
+LOCALHOST = "localhost"
 BUFFER_SIZE = 1024
 
 class Client:
-    def __init__(self, port):
+    def __init__(self, server, port):
+        self.server = server
         self.port = port
         self.inner_buffer = ""
 
@@ -58,7 +60,7 @@ class Client:
 
     def run(self, punter):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((SERVER, self.port))
+        self.s.connect((self.server, self.port))
 
         # handshake
         data = punter.get_handshake()
@@ -80,7 +82,6 @@ class Client:
             self.send_message(reply)
 
 
-
 if __name__ == "__main__":
     port = int(sys.argv[1])
     config = Config()
@@ -89,5 +90,5 @@ if __name__ == "__main__":
     # punter = ChaosPunter(config)
     punter = GreedyPunter(config)
 
-    client = Client(port)
+    client = Client(SERVER, port)
     client.run(punter)
