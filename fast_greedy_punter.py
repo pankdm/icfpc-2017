@@ -6,20 +6,8 @@ from pprint import pprint
 from timeit import default_timer as timer
 
 from graph_util import *
-from union_find import *
+from union_find_scores import *
 from client import *
-
-def compute_score(components, mines, distances):
-    total_score = 0
-    for mine in mines:
-        root = components.component(mine)
-        # print 'From mine {} using root {}'.format(mine, root)
-        # print 'Comps: {}'.format(components.components()[root])
-        for fn in components.components()[root]:
-            d = distances.get(fn, {}).get(mine, 0)
-            total_score += d * d
-    return total_score
-
 
 def compute_score_slow(graph, mines, distances):
     total_score = 0
@@ -66,7 +54,6 @@ class FastGreedyPunter:
             n = max(n, t)
         n += 1
         self.graph_readonly = deepcopy(self.graph)
-        self.components = ComponentsList(n)
 
         self.mines = set()
         for mine in map_data["mines"]:
@@ -85,6 +72,7 @@ class FastGreedyPunter:
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
+        self.components = ComponentsListWithScores(n, self.mines, self.distances)
         # maintain graph of our nodes
         self.my_graph = defaultdict(set)
 
@@ -144,16 +132,17 @@ class FastGreedyPunter:
 
         best_score = None
         best_st = None
+        current_score = self.components.score()
         for st in all_edges:
             s, t = st
             if self.components.component(s) != self.components.component(t):
                 self.components.start_transaction()
-                self.components.union(s, t)
+                self.components.union(self.components.component(s), self.components.component(t))
                 # print ''
                 # print 'Computing score for {}'.format(st)
                 # print 'components of s={}: {}'.format(s, self.components.components()[s])
                 # print 'components of t={}: {}'.format(t, self.components.components()[t])
-                score = compute_score(self.components, self.mines, self.distances)
+                score = self.components.score()
 
                 # if self.config.log:
                 #     my_graph_copy = deepcopy(self.my_graph)
@@ -169,7 +158,7 @@ class FastGreedyPunter:
                 self.components.rollback_transaction()
 
         if self.config.log:
-            print('Found {} that would give score {}'.format(best_st, best_score))
+            print('Found {} that would give score {}'.format(best_st, best_score - current_score))
 
         if best_score is None:
             # choose random if nothing found

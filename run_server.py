@@ -5,7 +5,7 @@ from greedy_punter import GreedyPunter
 from greedy_punter2 import GreedyPunter2
 from chaos_punter import ChaosPunter
 
-from config import create_punter
+from config import create_punter, Config
 
 
 import sys
@@ -17,19 +17,22 @@ if __name__ == "__main__":
         # create_punter(ChaosPunter, log=False, name="ChaosPunter 1"),
         # create_punter(ChaosPunter, log=False, name="ChaosPunter 2"),
         # create_punter(ChaosPunter, log=False, name="ChaosPunter 3"),
-        # create_punter(ChaosPunter, log=False, name="ChaosPunter 4"),
+        create_punter(ChaosPunter, log=False, name="ChaosPunter 4"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 1"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 2"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 3"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 4"),
-        # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 1"),
-        # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 2"),
-        # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 3"),
-        create_punter(GreedyPunter2, log=True, name="GreedyPunter2 4"),
+        create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 1"),
+        create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 2"),
+        create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 3"),
+        create_punter(FastGreedyPunter, log=True, name="FastGreedyPunter 4"),
     ]
     settings = {
-        "futures": True
+        "futures": True,
     }
 
-    s = Server(punters, map_file, settings)
+    config = Config()
+    config.log = True
+
+    s = Server(punters, map_file, settings, config)
     s.run()
