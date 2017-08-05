@@ -8,14 +8,14 @@ from timeit import default_timer as timer
 from graph_util import *
 from union_find import *
 from client import *
+from union_find_stupid import *
 
-def compute_score(components, mines, distances):
+def compute_score(union_find, mines, distances):
     total_score = 0
     for mine in mines:
-        root = components.component(mine)
         # print 'From mine {} using root {}'.format(mine, root)
         # print 'Comps: {}'.format(components.components()[root])
-        for fn in components.components()[root]:
+        for fn in union_find.nodes_in_component(mine):
             d = distances.get(fn, {}).get(mine, 0)
             total_score += d * d
     return total_score
@@ -31,7 +31,7 @@ def compute_score_slow(graph, mines, distances):
     return total_score
 
 
-class FastGreedyPunter:
+class GreedyPunter2:
     def __init__(self, config):
         self.name = "greedy monkey" if not config.name else config.name
         self.num_moves = 0
@@ -66,7 +66,7 @@ class FastGreedyPunter:
             n = max(n, t)
         n += 1
         self.graph_readonly = deepcopy(self.graph)
-        self.components = ComponentsList(n)
+        self.union_find = UnionFindStupid(n)
 
         self.mines = set()
         for mine in map_data["mines"]:
@@ -146,27 +146,26 @@ class FastGreedyPunter:
         best_st = None
         for st in all_edges:
             s, t = st
-            if self.components.component(s) != self.components.component(t):
-                self.components.start_transaction()
-                self.components.union(s, t)
+            if self.union_find.root(s) != self.union_find.root(t):
+                union_find_copy = self.union_find.copy()
+                union_find_copy.union(s, t)
                 # print ''
                 # print 'Computing score for {}'.format(st)
                 # print 'components of s={}: {}'.format(s, self.components.components()[s])
                 # print 'components of t={}: {}'.format(t, self.components.components()[t])
-                score = compute_score(self.components, self.mines, self.distances)
+                score = compute_score(union_find_copy, self.mines, self.distances)
 
-                # if self.config.log:
-                #     my_graph_copy = deepcopy(self.my_graph)
-                #     add_edge(my_graph_copy, st)
-                #     slow_score = compute_score_slow(my_graph_copy, self.mines, self.distances)
-                #     if score != slow_score:
-                #         print "ERROR: different score for {}, {} vs {} (slow)".format(
-                #             st, score, slow_score)
-                #
+                if self.config.log:
+                    my_graph_copy = deepcopy(self.my_graph)
+                    add_edge(my_graph_copy, st)
+                    slow_score = compute_score_slow(my_graph_copy, self.mines, self.distances)
+                    if score != slow_score:
+                        print "ERROR: different score for {}, {} vs {} (slow)".format(
+                            st, score, slow_score)
+
                 if best_score is None or score > best_score:
                     best_score = score
                     best_st = st
-                self.components.rollback_transaction()
 
         if self.config.log:
             print('Found {} that would give score {}'.format(best_st, best_score))
@@ -177,7 +176,7 @@ class FastGreedyPunter:
             st = all_edges[index]
             return st
 
-        # raw_input("press enter")
+        raw_input("press enter")
 
         return best_st
 
@@ -207,8 +206,7 @@ class FastGreedyPunter:
                     if punter_id == self.punter_id:
                         add_edge(self.my_graph, st)
 
-                        self.components.start_transaction()
-                        self.components.union(s, t)
+                        self.union_find.union(s, t)
 
         # take one at random
         if False and self.num_moves == 1:
@@ -234,6 +232,6 @@ if __name__ == "__main__":
     config = Config()
     config.log = True
 
-    punter = FastGreedyPunter(config)
+    punter = GreedyPunter2(config)
     client = Client(LOCALHOST, 9999)
     client.run(punter)
