@@ -12,7 +12,10 @@ from client import *
 def compute_score(components, mines, distances):
     total_score = 0
     for mine in mines:
-        for fn in components.components()[mine]:
+        root = components.component(mine)
+        # print 'From mine {} using root {}'.format(mine, root)
+        # print 'Comps: {}'.format(components.components()[root])
+        for fn in components.components()[root]:
             d = distances.get(fn, {}).get(mine, 0)
             total_score += d * d
     return total_score
@@ -146,6 +149,10 @@ class FastGreedyPunter:
             if self.components.component(s) != self.components.component(t):
                 self.components.start_transaction()
                 self.components.union(s, t)
+                # print ''
+                # print 'Computing score for {}'.format(st)
+                # print 'components of s={}: {}'.format(s, self.components.components()[s])
+                # print 'components of t={}: {}'.format(t, self.components.components()[t])
                 score = compute_score(self.components, self.mines, self.distances)
 
                 if self.config.log:
@@ -169,6 +176,8 @@ class FastGreedyPunter:
             index = random.randint(0, len(all_edges) - 1)
             st = all_edges[index]
             return st
+
+        # raw_input("press enter")
 
         return best_st
 
@@ -202,7 +211,7 @@ class FastGreedyPunter:
                         self.components.union(s, t)
 
         # take one at random
-        if self.num_moves == 1:
+        if False and self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
             if self.config.log:
                 print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
