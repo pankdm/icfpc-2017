@@ -129,8 +129,9 @@ export default class Engine {
       map: this.map,
       players: this.players,
       moves: this.moves,
+      scores: scores,
     };
-    const log = `logs/${moment().format()}.json`;
+    const log = `logs/${moment().format()}.json`.replace(/:/g, '');
     mkdirp('logs', (err) => {
       if (err) {
         winston.error(err);

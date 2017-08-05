@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Punter Viewer FX</title>
+    <link rel="stylesheet" href="../js-core/bootstrap.min.css">
+    <link rel="stylesheet" href="viewer.css">
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <h1>&#955; Viewer FX</h1>
+      <div class="row">
+        <div class="col-md-4">
+          <fieldset>
+            <legend>Log settings</legend>
+            <table class="settings-table">
+              <tr>
+                <td>Log file:</td>
+                <td>
+                  <label class="btn btn-default">Open log<input type="file" id="logFile" accept="application/json" onchange="readLogFile(this)" hidden/></label>
+                </td>
+              </tr>
+              <tr>
+                <td>Punters:</td>
+                <td><div id="punters"></div></td>
+              </tr>
+              <tr>
+                <td>Moves:</td>
+                <td><div id="moves"></div></td>
+              </tr>
+            </table>
+          </fieldset>
+        </div>
+        <div class="col-md-8">
+          <fieldset>
+            <legend>Log</legend>
+            <textarea id="log" readonly="readonly"></textarea>
+          </fieldset>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend>Game Information</legend>
+        <table class="settings-table">
+          <tr>
+            <td>
+              <button class="btn" id="prev" onclick="undoMove()" disabled>Prev</button>
+            </td>
+            <td>
+              <div id="current-move"></div>
+            </td>
+            <td>
+              <button class="btn" id="next" onclick="doMove()" disabled>Next</button>
+            </td>
+          </tr>
+        </table>
+      </fieldset>
+    </div>
+    <div class="container-fluid">
+      <fieldset>
+        <legend>Canvas</legend>
+        <div class="container-fluid" id="cy"></div>
+        <div id="loading">
+          <span class="fa fa-refresh fa-spin"></span>
+        </div>
+      </fieldset>
+    </div>
+    <!--- load scripts -->
+    <script src="../js-core/jquery.min.js"></script>
+    <script src="../js-core/bootstrap.min.js"></script>
+    <script src="../js-core/fastclick.min.js"></script>
+    <script src="../js-core/cytoscape.min.js"></script>
+    <script src="../js-core/bluebird.min.js"></script>
+    <script src="../js-core/js-core.js"></script>
+    <script src="viewer.js"></script>
+    </body>
+</html>
