@@ -1,11 +1,8 @@
 from server import Server
 
-from fast_greedy_punter import FastGreedyPunter
-from greedy_punter import GreedyPunter
-from chaos_punter import ChaosPunter
-
 from config import create_punter
 
+from all_solvers import *
 from includes import *
 
 import random
@@ -46,7 +43,7 @@ def run_battle(stats):
 
     punters = [
         # create_punter(ChaosPunter, log=False, name="Chaos 1"),
-        create_punter(GreedyPunter, log=False, name="Greedy 4"),
+        create_punter(GreedyPunter2, log=False, name="Greedy2 1"),
         # create_punter(ChaosPunter, log=False, name="Chaos 2"),
         # create_punter(ChaosPunter, log=False, name="Chaos 3"),
         # create_punter(ChaosPunter, log=False, name="Chaos 4"),
