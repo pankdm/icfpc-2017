@@ -148,20 +148,20 @@ class GreedyPunter2:
             s, t = st
             if self.union_find.root(s) != self.union_find.root(t):
                 union_find_copy = self.union_find.copy()
-                union_find_copy.union(s, t)
+                # union_find_copy.union(s, t)
                 # print ''
                 # print 'Computing score for {}'.format(st)
                 # print 'components of s={}: {}'.format(s, self.components.components()[s])
                 # print 'components of t={}: {}'.format(t, self.components.components()[t])
                 score = compute_score(union_find_copy, self.mines, self.distances)
 
-                if self.config.log:
-                    my_graph_copy = deepcopy(self.my_graph)
-                    add_edge(my_graph_copy, st)
-                    slow_score = compute_score_slow(my_graph_copy, self.mines, self.distances)
-                    if score != slow_score:
-                        print "ERROR: different score for {}, {} vs {} (slow)".format(
-                            st, score, slow_score)
+                # if self.config.log:
+                #     my_graph_copy = deepcopy(self.my_graph)
+                #     add_edge(my_graph_copy, st)
+                #     slow_score = compute_score_slow(my_graph_copy, self.mines, self.distances)
+                #     if score != slow_score:
+                #         print "ERROR: different score for {}, {} vs {} (slow)".format(
+                #             st, score, slow_score)
 
                 if best_score is None or score > best_score:
                     best_score = score
@@ -176,7 +176,7 @@ class GreedyPunter2:
             st = all_edges[index]
             return st
 
-        raw_input("press enter")
+        # raw_input("press enter")
 
         return best_st
 
