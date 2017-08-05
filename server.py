@@ -13,6 +13,12 @@ from graph_util import (
 
 from config import Config
 
+
+class FinalScore:
+    def __init__(self):
+        self.rank = 0
+        self.score = 0
+
 def update_punter_id(move, punter_id):
     move.get("claim", {})["punter"] = punter_id
 
@@ -160,16 +166,27 @@ class Server:
         for p in self.punters:
             p.process_move(data)
 
-        print('GAME OVER ON SERVER!')
+        if self.config.log:
+            print('GAME OVER ON SERVER!')
         result = []
         for score_data in scores:
             punter_id = score_data["punter"]
             score = score_data["score"]
             result.append( (score, punter_id) )
 
+        # could be used to obtain results from outside
+        self.final_score = {}
+
         result.sort(reverse=True)
         place = 1
         for score, punter_id in result:
-            print('{} --> punter \'{}\' with {} score'.format(
-                place, punter_id2name[punter_id], score))
+            if self.config.log:
+                print('{} --> punter \'{}\' with {} score'.format(
+                    place, punter_id2name[punter_id], score))
+
+            final_score = FinalScore()
+            final_score.score = score
+            final_score.rank = place
+            self.final_score[punter_id2name[punter_id]] = final_score
+
             place += 1
