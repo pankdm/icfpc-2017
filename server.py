@@ -19,20 +19,31 @@ def canonical(s, t):
     if s < t: return (s, t)
     return (t, s)
 
-def compute_score(graph, mines, distances):
+def compute_score(graph, mines, distances, future_st):
     total_score = 0
     for mine in mines:
         scores = run_bfs(mine, graph)
         for target in scores:
             d = distances.get(target, {}).get(mine, 0)
             total_score += d * d
+
+        if future_st is not None:
+            s, t = future_st
+            if s == mine:
+                d = distances.get(t, {}).get(mine, 0)
+                if t in scores:
+                    total_score += d ** 3
+                else:
+                    total_score -= d ** 3
+
     return total_score
 
 
 class Server:
-    def __init__(self, punters, map_file):
+    def __init__(self, punters, map_file, settings):
         self.punters = punters
         self.js_map = json.loads(open(map_file, 'rt').read())
+        self.settings = settings
         # pprint(self.js_map)
 
         self.world = World(self.js_map)
@@ -57,6 +68,10 @@ class Server:
         # map from canonical presentation to punter_id
         self.claimed_roads = {}
 
+        # map punter_id -> future (s, t)
+        self.futures = {}
+        self.futures_enabled = settings.get("futures", False)
+
     def _apply_move(self, move, punter_id):
         if "claim" not in move:
             return
@@ -72,8 +87,9 @@ class Server:
     def _compute_scores(self):
         result = []
         for punter_id, graph in self.per_punter_graph.items():
+            future_st = self.futures.get(punter_id, None)
             score = compute_score(
-                graph, self.world.mines, self.distances)
+                graph, self.world.mines, self.distances, future_st)
             data = {
                 "punter": punter_id,
                 "score": score,
@@ -86,13 +102,20 @@ class Server:
         punter_id2name = {}
         for index, p in enumerate(self.punters):
             data = {
-                "punter": index,
+                "punter": p_index,
                 "punters": n,
-                "map": deepcopy(self.js_map)
+                "map": deepcopy(self.js_map),
+                "settings": self.settings,
             }
             punter_id2name[index] = p.get_handshake()["me"]
             # Ignore reply for now
-            p.process_setup(data)
+            reply = p.process_setup(data)
+            futures = reply.get("futures", [])
+            if self.futures_enabled and futures:
+                f = futures[-1]
+                s = f["source"]
+                t = f["target"]
+                self.futures[p_index] = (s, t)
 
         num_moves = 0
         while num_moves < self.total_moves:
@@ -143,4 +166,3 @@ class Server:
             print('{} --> punter \'{}\' with {} score'.format(
                 place, punter_id2name[punter_id], score))
             place += 1
-

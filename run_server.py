@@ -17,6 +17,9 @@ if __name__ == "__main__":
         create_punter(ChaosPunter, log=False, name="ChaosPunter 2"),
         create_punter(GreedyPunter, log=False, name="GreedyPunter 2"),
     ]
+    settings = {
+        "futures": True
+    }
 
-    s = Server(punters, map_file)
+    s = Server(punters, map_file, settings)
     s.run()
