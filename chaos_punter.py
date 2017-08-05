@@ -46,14 +46,15 @@ class ChaosPunter:
         # default reply
         reply = {"ready": self.punter_id}
 
-        futures = data.get("settings", {}).get("futures", False)
-        if futures:
-            s, t = self._select_random_future(self.graph)
-            print('Selected future: {}'.format((s, t)))
-            reply["futures"] = {
-                "source": s,
-                "target": t
-            }
+        if self.config.futures:
+            futures = data.get("settings", {}).get("futures", False)
+            if futures:
+                s, t = self._select_random_future(self.graph)
+                print('Selected future: {}'.format((s, t)))
+                reply["futures"] = [{
+                    "source": s,
+                    "target": t
+                }]
         return reply
 
     def process_stop(self, data):

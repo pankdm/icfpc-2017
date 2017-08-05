@@ -21,6 +21,9 @@ if __name__ == "__main__":
         create_punter(GreedyPunter, log=False, name="GreedyPunter 3"),
         create_punter(GreedyPunter, log=False, name="GreedyPunter 4"),
     ]
+    settings = {
+        "futures": True
+    }
 
-    s = Server(punters, map_file)
+    s = Server(punters, map_file, settings)
     s.run()
