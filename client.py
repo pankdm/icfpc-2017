@@ -1,8 +1,8 @@
 from __future__ import print_function
 
 
-from chaos_punter import ChaosPunter
-from greedy_punter import GreedyPunter
+#from chaos_punter import ChaosPunter
+#from greedy_punter import GreedyPunter
 
 from config import Config
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     config.log = True
 
     # punter = ChaosPunter(config)
-    punter = GreedyPunter(config)
+    # punter = GreedyPunter(config)
 
     client = Client(SERVER, port)
     client.run(punter)
