@@ -5,6 +5,7 @@ from pprint import pprint
 
 from config import Config
 
+from client import *
 from graph_util import *
 
 class ChaosPunter:
@@ -135,3 +136,11 @@ class ChaosPunter:
                 "target": t,
             },
         }
+
+if __name__ == "__main__":
+    config = Config()
+    config.log = False
+
+    punter = ChaosPunter(config)
+    client = Client(LOCALHOST, 9999)
+    client.run(punter)
