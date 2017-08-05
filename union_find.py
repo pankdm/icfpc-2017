@@ -36,6 +36,9 @@ class ComponentsList:
                 self.lists_[t[2]].remove(t[1])
         self.transactions_.pop()
 
+    def component(self, v):
+        return self.vertices_[v]
+
     def components(self):
         return self.lists_
 
