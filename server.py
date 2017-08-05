@@ -11,6 +11,8 @@ from graph_util import (
     World,
 )
 
+from config import Config
+
 def update_punter_id(move, punter_id):
     move.get("claim", {})["punter"] = punter_id
 
@@ -40,7 +42,9 @@ def compute_score(graph, mines, distances, future_st):
 
 
 class Server:
-    def __init__(self, punters, map_file, settings):
+    def __init__(self, punters, map_file, settings, config=Config()):
+        self.config = config
+
         self.punters = punters
         self.js_map = json.loads(open(map_file, 'rt').read())
         self.settings = settings
@@ -48,9 +52,11 @@ class Server:
 
         self.world = World(self.js_map)
         self.distances = compute_distances(self.world)
-        print('Calculated distances')
-        for city, scores in sorted(self.distances.items()):
-            print('{} -> {}'.format(city, scores))
+
+        if self.config.log:
+            print('Calculated distances')
+            for city, scores in sorted(self.distances.items()):
+                print('{} -> {}'.format(city, scores))
 
         self.total_moves = len(self.js_map["rivers"])
         # debugging
@@ -120,8 +126,9 @@ class Server:
         num_moves = 0
         while num_moves < self.total_moves:
             for p_index, p in enumerate(self.punters):
-                print
-                print '{}/{} == next round =='.format(num_moves + 1, self.total_moves)
+                if self.config.log:
+                    print
+                    print '{}/{} == next round =='.format(num_moves + 1, self.total_moves)
                 moves = []
                 for punter_id, move in self.previous_moves.items():
                     moves.append(move)

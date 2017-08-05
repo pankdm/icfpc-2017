@@ -29,8 +29,9 @@ class FastGreedyPunter:
 
 
     def process_setup(self, data):
-        print("Processing setup:")
-        pprint(data)
+        if self.config.log:
+            print("Processing setup:")
+            pprint(data)
 
         self.punter_id = data["punter"]
         self.num_punters = data["punters"]
@@ -66,9 +67,10 @@ class FastGreedyPunter:
             for city, score in scores.items():
                 self.distances[city][mine] = score
 
-        print('Calculated distances')
-        for city, scores in sorted(self.distances.items()):
-            print('{} -> {}'.format(city, scores))
+        if self.config.log:
+            print('Calculated distances')
+            for city, scores in sorted(self.distances.items()):
+                print('{} -> {}'.format(city, scores))
 
         # maintain graph of our nodes
         self.my_graph = defaultdict(set)
@@ -121,18 +123,6 @@ class FastGreedyPunter:
         s, t = all_edges[index]
         return (s, t)
 
-    def _select_random_future(self, graph):
-        all_edges = []
-        for s, nodes in self.graph.items():
-            # skip non-mine sources
-            if s not in self.mines:
-                continue
-            for t in nodes:
-                all_edges.append( (s, t) )
-        index = random.randint(0, len(all_edges) - 1)
-        s, t = all_edges[index]
-        return (s, t)
-
     def _select_greedy_edge(self):
         all_edges = []
         for s, nodes in self.graph.items():
@@ -151,14 +141,16 @@ class FastGreedyPunter:
                     best_st = st
                 self.components.rollback_transaction()
 
-        print('Found {} that would give score {}'.format(st, best_score))
+        if self.config.log:
+            print('Found {} that would give score {}'.format(st, best_score))
         return st
 
 
     def process_move(self, data):
-        print ''
-        print("Processing move:")
-        pprint(data)
+        if self.config.log:
+            print ''
+            print("Processing move:")
+            pprint(data)
 
 
         self.num_moves += 1
@@ -182,12 +174,14 @@ class FastGreedyPunter:
         # take one at random
         if self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
-            print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
+            if self.config.log:
+                print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
         else:
             start = timer()
             s, t =  self._select_greedy_edge()
             end = timer()
-            print ('Finished select_greey_edge in {}s'.format(end - start))
+            if self.config.log:
+                print ('Finished select_greey_edge in {}s'.format(end - start))
 
         self.components.start_transaction()
         self.components.union(s, t)

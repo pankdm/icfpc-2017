@@ -12,7 +12,6 @@ class ChaosPunter:
         self.name = "chaos monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
-        print('Created ChaosPunter with: {}'.format(self.config.log))
 
     def get_handshake(self):
         return {"me": self.name}
@@ -60,7 +59,7 @@ class ChaosPunter:
     def process_stop(self, data):
         if not self.config.log:
             return None
-        
+
         print('GAME OVER!')
         scores = {}
         result = []
