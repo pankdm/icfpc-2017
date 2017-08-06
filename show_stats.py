@@ -7,11 +7,19 @@ class BattleStats:
     def __init__(self):
         self.num_games = 0
         self.rank_score = 0
+        self.game_score = 0
 
     def get_avg_rank_score(self):
         if self.num_games == 0: return 0
         else:
             return self.rank_score * 1.0 / self.num_games
+
+    def get_avg_game_score(self):
+        if self.num_games == 0: return 0
+        else:
+            return self.game_score * 1.0 / self.num_games
+
+
 
 def run():
     board = {}
@@ -43,6 +51,7 @@ def run():
             bs = board[map_name][name]
             bs.num_games += 1
             bs.rank_score += n - r["rank"] + 1
+            bs.game_score += r["score"]
 
 
     for m, s in ORIGINAL_MAPS:
@@ -56,9 +65,10 @@ def run():
 
             for player, bs in ll:
                 if player == "chaos monkey": continue
-                print '>>   {} --> {} ({} games)'.format(
+                print '>>   {} --> {} rank, {} score ({} games)'.format(
                     player,
                     bs.get_avg_rank_score(),
+                    bs.get_avg_game_score(),
                     bs.num_games)
 
 if __name__ == "__main__":
