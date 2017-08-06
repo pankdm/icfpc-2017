@@ -256,6 +256,8 @@ class FastGreedyStochasticPunter:
 
 class FastGreedyStochasticMaxPunter(FastGreedyStochasticPunter):
     def _aggregate_random_scores(self, scores):
+        if len(scores) == 0:
+            return 0
         return float(max(scores))//2
 
 
