@@ -1,4 +1,5 @@
 from copy import deepcopy
+import random
 
 def m(map_name, **kwargs):
     return ("maps/{}".format(map_name), kwargs)
@@ -15,7 +16,9 @@ MAPS = [
     m("randomMedium.json", n=8),
     m("randomSparse.json", n=8),
     m("boston-sparse.json", n=8),
+]
 
+BIG_MAPS = [
     m("edinburgh-sparse.json", n=16),
     m("gothenburg-sparse.json", n=16),
     m("nara-sparse.json", n=16),
@@ -23,3 +26,5 @@ MAPS = [
     m("oxford2-sparse-2.json", n=16),
     m("van-city-sparse.json", n=16),
 ]
+random.shuffle(BIG_MAPS)
+MAPS.extend(BIG_MAPS)

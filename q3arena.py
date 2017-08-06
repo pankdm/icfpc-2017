@@ -27,11 +27,19 @@ def select_punters(size):
     punters = []
     if len(all_punters) < size:
         punters = all_punters
-        it = 0
+        c_it = 0
+        g_it = 0
+
         while len(punters) < size:
-            punters.append(create_punter(ChaosPunter,
-                name='chaos monkey {}'.format(it)))
-            it += 1
+            if random.random() > 0.5:
+                punters.append(create_punter(ChaosPunter,
+                    name='chaos monkey {}'.format(c_it)))
+                c_it += 1
+            else:
+                punters.append(create_punter(FastGreedyPunter,
+                    name='greedy monkey {}'.format(g_it)))
+                g_it += 1
+
     else:
         selected_indexes = random.sample(indexes, size)
         for i in selected_indexes:
