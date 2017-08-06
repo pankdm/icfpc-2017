@@ -345,8 +345,13 @@ function theirTurn() {
 
 function updateEdgeOwner(punter, source, target) {
   const es = cy.edges("[source=\"" + source + "\"][target=\"" + target + "\"]");
+  const rs = cy.edges("[source=\"" + target + "\"][target=\"" + source + "\"]");
   if (es.length > 0) {
     const e = es[0];
+    e.data()["owner"] = punter;
+    e.style("line-color", getPunterColour(punter));
+  } else if (rs.length > 0) {
+    const e = rs[0];
     e.data()["owner"] = punter;
     e.style("line-color", getPunterColour(punter));
   } else {
@@ -356,8 +361,13 @@ function updateEdgeOwner(punter, source, target) {
 
 function resetEdgeOwner(source, target) {
   const es = cy.edges("[source=\"" + source + "\"][target=\"" + target + "\"]");
+  const rs = cy.edges("[source=\"" + target + "\"][target=\"" + source + "\"]");
   if (es.length > 0) {
     const e = es[0];
+    e.data()["owner"] = null;
+    e.style("line-color", "#000099");
+  } else if (rs.length > 0) {
+    const e = rs[0];
     e.data()["owner"] = null;
     e.style("line-color", "#000099");
   } else {

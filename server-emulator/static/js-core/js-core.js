@@ -1,5 +1,7 @@
 /* Globals */
 /* Graph style */
+const baseWidth = 36
+
 const graphStyle = [
   {
     "selector": "node",
@@ -52,7 +54,7 @@ const graphStyle = [
       "font-size": 64,
       "color": "#FFF",
       "line-color": "#009",
-      "width": 35,
+      "width": baseWidth,
       "z-index" : 1,
       "curve-style": "haystack",
       "haystack-radius": 0
@@ -65,7 +67,7 @@ const graphStyle = [
       "font-size": 4,
       "color": "#fff",
       "line-color": "yellow",
-      "width": 35
+      "width": baseWidth
       }
   },
 
