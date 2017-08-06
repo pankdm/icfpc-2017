@@ -2,6 +2,7 @@ import json
 import os
 from collections import defaultdict
 from q3maps import *
+import sys
 
 class BattleStats:
     def __init__(self):
@@ -24,6 +25,10 @@ class BattleStats:
 def run():
     board = {}
 
+    min_arena_version = None
+    if len(sys.argv) > 1:
+        min_arena_version = int(sys.argv[1])
+
     loc = 'arena/results'
     files = os.listdir(loc)
 
@@ -41,6 +46,11 @@ def run():
             js = json.loads(json.loads(js_data))
         except Exception as e:
             print f, 'Error:', e
+
+        if min_arena_version:
+            version = js.get("arena_version", 0)
+            if version < min_arena_version:
+                continue
 
         map_name = js["map"]
         board.setdefault(map_name, defaultdict(BattleStats))
