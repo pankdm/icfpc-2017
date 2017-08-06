@@ -184,7 +184,8 @@ class FastGreedyStochasticPunter:
                     best_score = score
                     best_st = st
                 self.components.rollback_transaction()
-        print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps)
+        if self.config.log:
+            print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps)
 
         if self.config.log:
             print('Found {} that would give score {}'.format(best_st, best_score - current_score))
