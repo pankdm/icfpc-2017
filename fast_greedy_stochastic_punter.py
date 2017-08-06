@@ -120,11 +120,11 @@ class FastGreedyStochasticPunter:
         s, t = all_edges[index]
         return (s, t)
 
-    
+
     def _aggregate_random_scores(self, scores):
         return float(sum(scores))/len(scores)/2
 
-    
+
     def _select_greedy_edge(self):
         all_edges = []
         for s, nodes in self.graph.items():
@@ -175,8 +175,9 @@ class FastGreedyStochasticPunter:
                     score_random_gains.append(self.components.score() - score_before_random)
                     for j in xrange(n_transactions):
                         self.components.rollback_transaction()
-    
-                max_score_random_gain = max(max_score_random_gain, score_random_gains[-1])
+
+                if score_random_gains:
+                    max_score_random_gain = max(max_score_random_gain, score_random_gains[-1])
                 score = self.weight_score*self.components.score() + self.weight_stochastic*self._aggregate_random_scores(score_random_gains) + self.weight_bridges*bridge_score_gain
                 # if self.config.log:
                 #     print("%f %f %f" % (self.components.score() - current_score, self._aggregate_random_scores(score_random_gains), bridge_score_gain))
