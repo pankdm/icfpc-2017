@@ -84,6 +84,12 @@ class Server:
         self.futures = {}
         self.futures_enabled = settings.get("futures", False)
 
+        # data to dump that is useful for webserver visualization
+        self.all_moves = []
+        self.scores = []
+        self.players = []
+
+
     def _apply_move(self, move, punter_id):
         if "claim" not in move:
             return
@@ -119,7 +125,12 @@ class Server:
                 "map": deepcopy(self.js_map),
                 "settings": self.settings,
             }
-            punter_id2name[p_index] = p.get_handshake()["me"]
+            p_name = p.get_handshake()["me"]
+            punter_id2name[p_index] = p_name
+            self.players.append({
+                "id": p_index,
+                "name": p_name,
+            })
             # Ignore reply for now
             reply = p.process_setup(data)
             futures = reply.get("futures", [])
@@ -146,8 +157,9 @@ class Server:
                 }
                 next_move = p.process_move(data)
                 update_punter_id(next_move, p_index)
-                self.previous_moves[p_index] = next_move
 
+                self.previous_moves[p_index] = next_move
+                self.all_moves.append(next_move)
                 self._apply_move(next_move, p_index)
 
                 num_moves += 1
@@ -163,6 +175,8 @@ class Server:
                 "scores": scores,
             }
         }
+        self.scores = scores
+
         for p in self.punters:
             p.process_move(data)
 
@@ -198,3 +212,12 @@ class Server:
             })
 
             place += 1
+
+    def get_logs_to_dump(self):
+        data = {
+            "map": self.js_map,
+            "players": self.players,
+            "moves": self.all_moves,
+            "scores": self.scores,
+        }
+        return data
