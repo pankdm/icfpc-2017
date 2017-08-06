@@ -115,7 +115,7 @@ class VladSolver1:
         return res
 
     def get_handshake(self):
-        return {'me': 'vlad1'}
+        return {'me': self.name}
 
     def process_setup(self, data):
         self.id = data['punter']
@@ -145,19 +145,20 @@ class VladSolver1:
         self.padj = {i: defaultdict(list) for i in range(self.num)}
         self.num_moves_left = len(data['map']['rivers'])
 
-        pprint(self.id)
-        pprint(self.num)
-        pprint(self.adj)
-        pprint(self.mines)
-        pprint(self.dist)
-        pprint(self.free_edges)
-        pprint(self.padj)
-        pprint(self.num_moves_left)
+        #pprint(self.id)
+        #pprint(self.num)
+        #pprint(self.adj)
+        #pprint(self.mines)
+        #pprint(self.dist)
+        #pprint(self.free_edges)
+        #pprint(self.padj)
+        #pprint(self.num_moves_left)
 
         return {'ready': self.id}
 
     def process_stop(self, data):
-        pprint(data)
+        #pprint(data)
+        return
 
     def process_move(self, data):
         tbegin = time()
@@ -200,7 +201,7 @@ class VladSolver1:
         i = max(opts)[1]
         (u,v) = root.vchild[i][0]   # best move (haha)
 
-        pprint("MCTS: nsimul {}; time {}; move: {}".format(
-            root.nsimul, time() - tbegin, (u,v)))
+        #pprint("MCTS: nsimul {}; time {}; move: {}".format(
+        #    root.nsimul, time() - tbegin, (u,v)))
 
         return {'claim': {'punter': self.id, 'source': u, 'target': v}}
