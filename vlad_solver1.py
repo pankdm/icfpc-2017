@@ -1,6 +1,6 @@
 import math
 from copy import deepcopy
-from time import time
+from time import time, sleep
 from pprint import pprint
 from collections import deque, defaultdict
 from random import shuffle
@@ -17,6 +17,8 @@ class VladSolver1:
     def __init__(self, config):
         self.name = config.name
         self.timeout = getattr(config, 'timeout', 0.95)
+        self.sum_norm = getattr(config, 'sum_norm', False)
+        self.weighted_move = getattr(config, 'weighted_move', False)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
         h = hash(repr((padj,id, num_moves_left)))
@@ -95,7 +97,10 @@ class VladSolver1:
                 res = self._bfs(m, padj[id])
                 score += sum([d*d for (_,d) in res.items()])
             scores.append(score)
-        mx = max(scores) + 0.0
+        if self.sum_norm:
+            mx = sum(scores) + 0.0
+        else:
+            mx = max(scores) + 0.0
         return [s / mx for s in scores]
 
     def _compute_distances(self):
@@ -195,14 +200,31 @@ class VladSolver1:
                 self.num_moves_left)
 
         opts = []
+        #pprint(root.nsimul)
+        #if self.weighted_move:
+        #    for i in range(len(root.vchild)):
+        #        cnode = root.vchild[i][1]
+        #        sc1 = (cnode.score + 0.0) / cnode.nsimul
+        #        sc2 = 0.0
+        #        mix_norm = 0.5
+        #        #pprint("----------")
+        #        #pprint(sc1)
+        #        for j in range(len(cnode.vchild)):
+        #            ccnode = cnode.vchild[j][1]
+        #            w = (cnode.vchild[j][2] + 0.0) / (cnode.nsimul - 1)
+        #            sc2 += w * (ccnode.score + 0.0) / ccnode.nsimul
+        #            mix_norm = 2.0
+        #            #pprint(((ccnode.score + 0.0) / ccnode.nsimul, w))
+        #        #sleep(6)
+        #        opts.append( ((0.5*sc1 + 1.5*sc2) / mix_norm, i) )
+        #else:
         for i in range(len(root.vchild)):
             cnode = root.vchild[i][1]
-            sc = (cnode.score + 0.0) / cnode.nsimul
+            if self.weighted_move:
+                sc = (cnode.score + 0.0) / (cnode.nsimul - 1)
+            else:
+                sc = (cnode.score + 0.0) / cnode.nsimul
             opts.append( (sc, i) )
-
-        # TODO:
-        # mx = max(scores) + 0.0
-        # return [s / mx for s in scores]
 
         i = max(opts)[1]
         (u,v) = root.vchild[i][0]   # best move (haha)
