@@ -27,8 +27,11 @@ def select_punters(size):
     punters = []
     if len(all_punters) < size:
         punters = all_punters
+        it = 0
         while len(punters) < size:
-            punters.append( create_punter(ChaosPunter) )
+            punters.append(create_punter(ChaosPunter,
+                name='chaos monkey {}'.format(it)))
+            it += 1
     else:
         selected_indexes = random.sample(indexes, size)
         for i in selected_indexes:
@@ -55,7 +58,8 @@ class Q3Arena:
                     latest = max(latest, int(start))
 
         # write result logs
-        ff = '{:07d}-{}.json'.format(latest + 1, random_string(4))
+        ts = int(time.time())
+        ff = '{:07d}-{}-{}.json'.format(latest + 1, ts, random_string(4))
         fname = '{}/{}'.format(loc, ff)
         js_data = json.dumps(data)
         print 'File {}: writing {}'.format(fname, js_data)
