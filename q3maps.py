@@ -5,11 +5,11 @@ def m(map_name, **kwargs):
 
 
 MAPS = [
-    # m("sample.json", n=2),
-    #
-    # m("lambda.json", n=4),
-    # m("circle.json", n=4),
-    # m("Sierpinski-triangle.json", n=3),
+    m("sample.json", n=2),
+
+    m("lambda.json", n=4),
+    m("circle.json", n=4),
+    m("Sierpinski-triangle.json", n=3),
 
     m("tube.json", n=8),
     m("randomMedium.json", n=8),
