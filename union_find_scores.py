@@ -91,7 +91,15 @@ class ComponentsListWithScores:
         return len(self.edges_)
 
     def random_edge(self):
-        return random.sample(self.edges_, 1)[0]
+        result = None
+        i = 0
+        for x in self.edges_:
+            if not result or random.random() * len(self.edges_) < 1.0:
+                result = x
+            i += 1
+            if i > 20:
+                break
+        return result
 
 if __name__ == "__main__":
     cl = ComponentsList(5)

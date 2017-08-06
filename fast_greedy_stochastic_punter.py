@@ -1,6 +1,7 @@
 from collections import defaultdict, deque
 from copy import deepcopy
 import random
+import time
 
 from pprint import pprint
 from timeit import default_timer as timer
@@ -139,6 +140,8 @@ class FastGreedyStochasticPunter:
         best_score = None
         best_st = None
         current_score = self.components.score()
+        max_score_random_gain = 0
+        n_stochastic_steps = 0
         for st in all_edges:
             s, t = st
             if self.components.component(s) != self.components.component(t):
@@ -149,9 +152,11 @@ class FastGreedyStochasticPunter:
                 score_random_gain = 0
                 n_iterations = 0
                 stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
-                for i in xrange(10):
+                begin = time.clock()
+                while (time.clock() - begin)*len(all_edges) < 0.8:
                     n_transactions = 0
-                    for j in xrange(stochastic_edges):
+                    j = 0
+                    while j < stochastic_edges:
                         if 0 != self.components.num_edges():
                             random_edge = self.components.random_edge()
                             # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
@@ -159,6 +164,8 @@ class FastGreedyStochasticPunter:
                                 self.components.start_transaction()
                                 self.components.union(random_edge[0], random_edge[1])
                                 n_transactions += 1
+                                n_stochastic_steps += 1
+                                j += 1
                     n_iterations += 1
                     score_random_gain += self.components.score() - score_before_random
                     for j in xrange(n_transactions):
@@ -167,12 +174,14 @@ class FastGreedyStochasticPunter:
                 if 0 != n_iterations:
                     score_random_gain = float(score_random_gain)/n_iterations
 
+                max_score_random_gain = max(max_score_random_gain, score_random_gain)
                 score = self.components.score() + score_random_gain
 
                 if best_score is None or score > best_score:
                     best_score = score
                     best_st = st
                 self.components.rollback_transaction()
+        print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps)
 
         if self.config.log:
             print('Found {} that would give score {}'.format(best_st, best_score - current_score))
