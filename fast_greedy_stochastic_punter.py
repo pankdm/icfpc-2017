@@ -131,11 +131,17 @@ class FastGreedyStochasticPunter:
         s, t = all_edges[index]
         return (s, t)
 
+    
+    def _aggregate_random_scores(self, scores):
+        return float(sum(scores))/len(scores)/2
+
+    
     def _select_greedy_edge(self):
         all_edges = []
         for s, nodes in self.graph.items():
             for t in nodes:
                 all_edges.append( (s, t) )
+        random.shuffle(all_edges)
 
         best_score = None
         best_st = None
@@ -143,24 +149,27 @@ class FastGreedyStochasticPunter:
         max_score_random_gain = 0
         n_stochastic_steps = 0
         begin0 = time.clock()
+        n_processed = 0
         for st in all_edges:
-            if time.clock() > begin0 + 0.9:
+            if time.clock() > begin0 + 0.95:
                 break
+            n_processed += 1
             s, t = st
             if self.components.component(s) != self.components.component(t):
                 self.components.start_transaction()
                 self.components.union(s, t)
 
                 score_before_random = self.components.score()
-                score_random_gain = 0
+                score_random_gains = []
                 n_iterations = 0
                 stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
                 begin = time.clock()
-                while (time.clock() - begin)*len(all_edges) < 0.7:
+                c_move_time_limit = 0.7
+                while (time.clock() - begin)*len(all_edges) < c_move_time_limit:
                     n_transactions = 0
                     j = 0
                     while j < stochastic_edges:
-                        if (time.clock() - begin)*len(all_edges) > 0.7:
+                        if (time.clock() - begin)*len(all_edges) > c_move_time_limit:
                             break
                         if 0 != self.components.num_edges():
                             random_edge = self.components.random_edge()
@@ -172,22 +181,19 @@ class FastGreedyStochasticPunter:
                                 n_stochastic_steps += 1
                                 j += 1
                     n_iterations += 1
-                    score_random_gain += self.components.score() - score_before_random
+                    score_random_gains.append(self.components.score() - score_before_random)
                     for j in xrange(n_transactions):
                         self.components.rollback_transaction()
     
-                if 0 != n_iterations:
-                    score_random_gain = float(score_random_gain)/n_iterations
-
-                max_score_random_gain = max(max_score_random_gain, score_random_gain)
-                score = self.components.score() + score_random_gain
+                max_score_random_gain = max(max_score_random_gain, score_random_gains[-1])
+                score = self.components.score() + self._aggregate_random_scores(score_random_gains)
 
                 if best_score is None or score > best_score:
                     best_score = score
                     best_st = st
                 self.components.rollback_transaction()
         if self.config.log:
-            print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps)
+            print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps, float(n_processed)/len(all_edges))
 
         if self.config.log:
             print('Found {} that would give score {}'.format(best_st, best_score - current_score))
@@ -251,6 +257,10 @@ class FastGreedyStochasticPunter:
                 "target": t,
             },
         }
+
+class FastGreedyStochasticMaxPunter(FastGreedyStochasticPunter):
+    def _aggregate_random_scores(self, scores):
+        return float(max(scores))//2
 
 if __name__ == "__main__":
     config = Config()
