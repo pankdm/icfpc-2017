@@ -48,9 +48,10 @@ def run_battle(stats, it):
         #create_punter(VladSolver1, name="Vlad MCTS max", timeout=0.45, sum_norm=False),
         #create_punter(VladSolver1, name="Vlad MCTS inf", timeout=0.45, sum_norm=True),
         #create_punter(FastGreedyStochasticPunter, name="FastStoch"),
-        create_punter(FastGreedyPunter, name="FastGreedy"),
-        #create_punter(VladSolver1, name="Vlad MCTS 010", timeout=0.45, sum_norm=True, playout_max_depth=10),
-        create_punter(VladSolver1, name="Vlad MCTS 100", timeout=0.45, sum_norm=True, playout_max_depth=100),
+
+        #create_punter(FastGreedyPunter, name="FastGreedy"),
+        create_punter(VladSolver1, name="Vlad MCTS det", timeout=0.45, log=False, rand_edges=False),
+        create_punter(VladSolver1, name="Vlad MCTS rnd", timeout=0.45, rand_edges=True),
     ]
     settings = {
         "futures": True

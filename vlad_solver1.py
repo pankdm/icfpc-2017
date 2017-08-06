@@ -17,8 +17,10 @@ class VladSolver1:
     def __init__(self, config):
         self.name = config.name
         self.timeout = getattr(config, 'timeout', 0.95)
+        self.log = getattr(config, 'log', False)
         self.sum_norm = getattr(config, 'sum_norm', False)
         self.playout_max_depth = getattr(config, 'playout_max_depth', 9999)
+        self.rand_edges = getattr(config, 'rand_edges', False)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
         h = hash(repr((padj,id, num_moves_left)))
@@ -26,7 +28,12 @@ class VladSolver1:
             return self.tr[h]
         else:
             node = Node()
-            node.uchild = deque(free_edges)
+            if self.rand_edges:
+                rnd_edges = list(free_edges)
+                shuffle(rnd_edges)
+                node.uchild = deque(rnd_edges)
+            else:
+                node.uchild = deque(free_edges)
             self.tr[h] = node
             return node
 
@@ -213,7 +220,8 @@ class VladSolver1:
         i = max(opts)[1]
         (u,v) = root.vchild[i][0]   # best move (haha)
 
-        pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
-            self.name, self.num_moves_left, root.nsimul, time() - tbegin, (u,v)))
+        if self.log:
+            pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
+                self.name, self.num_moves_left, root.nsimul, time() - tbegin, (u,v)))
 
         return {'claim': {'punter': self.id, 'source': u, 'target': v}}
