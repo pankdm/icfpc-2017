@@ -145,39 +145,40 @@ class UberFastGreedyStochasticPunter:
         n_stochastic_steps = 0
         begin0 = time.clock()
         n_processed = 0
+        n_iterations = 0
+
         for st in all_edges:
             if time.clock() > begin0 + 0.95:
                 break
             n_processed += 1
             s, t = st
             if self.union.root(s) != self.union.root(t):
-                curr_edges = all_edges[:]
-                curr_edges.remove(st)
-                random.shuffle(curr_edges)
                 currUnion = deepcopy(self.union)
                 currUnion.union(s, t)
+                curr_edges = all_edges[:]
+                curr_edges.remove(st)
 
                 score_before_random = self.union.score()
                 score_random_gains = []
-                n_iterations = 0
                 stochastic_edges = min(len(curr_edges) / self.num_punters, 10)
                 begin = time.clock()
                 c_move_time_limit = 0.7
                 while (time.clock() - begin)*len(all_edges) < c_move_time_limit:
                     nextUnion = deepcopy(currUnion)
+                    random.shuffle(curr_edges)
                     n_transactions = 0
                     j = 0
                     while j < stochastic_edges:
                         if (time.clock() - begin)*len(all_edges) > c_move_time_limit:
                             break
-                        if 0 != len(curr_edges):
-                            random_edge = curr_edges.pop()
-                            # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
-                            if currUnion.root(random_edge[0]) != currUnion.root(random_edge[1]):
-                                nextUnion.union(random_edge[0], random_edge[1])
+                        for edge in curr_edges:
+                            if currUnion.root(edge[0]) != currUnion.root(edge[1]):
+                                nextUnion.union(edge[0], edge[1])
                                 n_transactions += 1
                                 n_stochastic_steps += 1
                                 j += 1
+                                if j >= stochastic_edges:
+                                    break
                     n_iterations += 1
                     score_random_gains.append(nextUnion.score() - score_before_random)
     
@@ -187,11 +188,11 @@ class UberFastGreedyStochasticPunter:
                 if best_score is None or score > best_score:
                     best_score = score
                     best_st = st
-                    
+
         if self.config.log:
             print(max_score_random_gain, self.num_edges, n_stochastic_steps, float(n_processed)/len(all_edges))
 
-        if self.config.log:
+        if self.config.log and best_score:
             print('Found {} that would give score {}'.format(best_st, best_score - current_score))
 
         if best_score is None:
