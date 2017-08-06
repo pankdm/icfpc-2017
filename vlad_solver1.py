@@ -3,7 +3,7 @@ from copy import deepcopy
 from time import time, sleep
 from pprint import pprint
 from collections import deque, defaultdict
-from random import shuffle
+from random import shuffle, randint
 
 class Node:
     def __init__(self):
@@ -18,9 +18,10 @@ class VladSolver1:
         self.name = config.name
         self.timeout = getattr(config, 'timeout', 0.95)
         self.log = getattr(config, 'log', False)
-        self.sum_norm = getattr(config, 'sum_norm', False)
+        self.sum_norm = getattr(config, 'sum_norm', True)
         self.playout_max_depth = getattr(config, 'playout_max_depth', 9999)
-        self.rand_edges = getattr(config, 'rand_edges', False)
+        self.search_width = getattr(config, 'search_width', 9999)
+        self.magic_moves = getattr(config, 'magic_moves', False)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
         h = hash(repr((padj,id, num_moves_left)))
@@ -28,14 +29,40 @@ class VladSolver1:
             return self.tr[h]
         else:
             node = Node()
-            if self.rand_edges:
-                rnd_edges = list(free_edges)
-                shuffle(rnd_edges)
-                node.uchild = deque(rnd_edges)
+            if self.magic_moves:
+                node.uchild = self._magic_moves(free_edges, id, padj)
             else:
-                node.uchild = deque(free_edges)
+                rnd_edges = list(free_edges); shuffle(rnd_edges)
+                node.uchild = deque(rnd_edges[0:self.search_width])
             self.tr[h] = node
             return node
+
+    def _magic_moves(self, free_edges, id, padj):
+        se = []
+        for (u,v) in free_edges:
+            sc = 0
+
+            # mine heuristic:
+            if u in self.mines:
+                sc += 1
+                if u not in padj[id]:
+                    sc += 100
+            if v in self.mines:
+                sc += 1
+                if v not in padj[id]:
+                    sc += 100
+
+            # adjacent to enemies heuristic:
+            for j in xrange(self.num):
+                if j != id and ((u in padj[j]) or (v in padj[j])):
+                    sc += 10
+
+            # add edge with score
+            sc += randint(0, 15)
+            se.append( (sc, (u,v)) )
+
+        se.sort(reverse=True)
+        return deque([e for (_,e) in se[0:self.search_width]])
 
     def _mcts_iter(self, root, padj, free_edges, num_moves_left):
         id = self.id
@@ -141,7 +168,7 @@ class VladSolver1:
         self.id = data['punter']
         self.num = data['punters']
         self.adj = {}
-        self.mines = []
+        self.mines = set([])
         self.dist = {}
         self.tr = {}
         self.free_edges = set([])
@@ -158,7 +185,7 @@ class VladSolver1:
             self.free_edges.add( tuple(sorted((u,v))) )
         
         for mine in data['map']['mines']:
-            self.mines.append(mine)
+            self.mines.add(mine)
 
         self._compute_distances()
 
