@@ -18,7 +18,6 @@ class VladSolver1:
         self.name = config.name
         self.timeout = getattr(config, 'timeout', 0.95)
         self.sum_norm = getattr(config, 'sum_norm', False)
-        self.weighted_move = getattr(config, 'weighted_move', False)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
         h = hash(repr((padj,id, num_moves_left)))
@@ -172,6 +171,7 @@ class VladSolver1:
         tbegin = time()
 
         if 'stop' in data:
+            #print()
             self.process_stop(data)
             return
 
@@ -200,30 +200,9 @@ class VladSolver1:
                 self.num_moves_left)
 
         opts = []
-        #pprint(root.nsimul)
-        #if self.weighted_move:
-        #    for i in range(len(root.vchild)):
-        #        cnode = root.vchild[i][1]
-        #        sc1 = (cnode.score + 0.0) / cnode.nsimul
-        #        sc2 = 0.0
-        #        mix_norm = 0.5
-        #        #pprint("----------")
-        #        #pprint(sc1)
-        #        for j in range(len(cnode.vchild)):
-        #            ccnode = cnode.vchild[j][1]
-        #            w = (cnode.vchild[j][2] + 0.0) / (cnode.nsimul - 1)
-        #            sc2 += w * (ccnode.score + 0.0) / ccnode.nsimul
-        #            mix_norm = 2.0
-        #            #pprint(((ccnode.score + 0.0) / ccnode.nsimul, w))
-        #        #sleep(6)
-        #        opts.append( ((0.5*sc1 + 1.5*sc2) / mix_norm, i) )
-        #else:
         for i in range(len(root.vchild)):
             cnode = root.vchild[i][1]
-            if self.weighted_move:
-                sc = (cnode.score + 0.0) / (cnode.nsimul - 1)
-            else:
-                sc = (cnode.score + 0.0) / cnode.nsimul
+            sc = (cnode.score + 0.0) / cnode.nsimul
             opts.append( (sc, i) )
 
         i = max(opts)[1]
@@ -231,5 +210,6 @@ class VladSolver1:
 
         #pprint("MCTS: nsimul {}; time {}; move: {}".format(
         #    root.nsimul, time() - tbegin, (u,v)))
+        #printf('.')
 
         return {'claim': {'punter': self.id, 'source': u, 'target': v}}
