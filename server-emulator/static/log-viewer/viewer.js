@@ -9,6 +9,7 @@ let queuedPass = false;
 let logfile = {};
 let logmove = 0;
 let timerId = -1;
+let log;
 
 const hostname = "127.0.0.1";
 const relayPort = 9998;
@@ -75,6 +76,7 @@ $(function() {
   $(document).ready(function() {
     enableButton('connect');
     $("#speed").on('slide', setSpeed);
+    log = $("#log");
   });
 });
 
@@ -105,23 +107,21 @@ function setStatus(status) {
 }
 
 function clearLog() {
-  document.getElementById(id).innerHTML = "";
+  log.val("");
 }
 
 function writeLog(msg) {
-    let id = "log";
-    document.getElementById(id).innerHTML += msg + "\n";
-    document.getElementById(id).scrollTop = document.getElementById(id).scrollHeight;
+    log.val(log.val() + msg + "\n");
+    log.scrollTop(log.prop('scrollHeight'));
     return;
 }
 
 function deleteLog(msg) {
-    let id = "log";
-    let index = document.getElementById(id).innerHTML.indexOf(msg);
+    let index = log.val().indexOf(msg);
     if (index !== -1) {
-      document.getElementById(id).innerHTML = document.getElementById(id).innerHTML.substring(0, index);
+      log.val(log.val().substring(0, index));
     }
-    document.getElementById(id).scrollTop = document.getElementById(id).scrollHeight;
+    log.scrollTop(log.prop('scrollHeight'));
     return;
 }
 
@@ -509,7 +509,12 @@ function readLogFile(input) {
     reader.onload = function (e) {
       const data = e.target.result;
       logfile = JSON.parse(data);
-      $("#punters").text(logfile.players);
+      $("#punters").text(logfile.players.length);
+      let names = "";
+      for (let i = 0; i < logfile.players.length; i++) {
+        names += "punter #" + logfile.players[i].id + " — " + logfile.players[i].name + "\n";
+      }
+      $("#names").val(names);
       $("#moves").text(logfile.moves.length);
 
       renderGraph(logfile.map);

@@ -6,7 +6,6 @@ let initialised = false;
 let queuedClaims = [];
 let queuedPass = false;
 
-//const hostname = "129.215.197.1";
 const hostname = "127.0.0.1";
 const relayPort = 9998;
 
@@ -81,9 +80,8 @@ $(function() {
 function _connect() {
   disableButton('connect');
   enableButton('disconnect');
-  const gamePort = $('#gamePort').val();
   const punterName = $('#punterName').val();
-  connect(gamePort, punterName);
+  connect(punterName);
   return;
 }
 
@@ -146,7 +144,7 @@ function logRelay(msg) {
     return;
 }
 
-function connect(gamePort, punterName) {
+function connect(punterName) {
     let graph = undefined;
     let ws_uri = "ws://" + hostname + ":" + relayPort;
     logInfo("connecting to relay [" + ws_uri + "]...");
@@ -156,7 +154,9 @@ function connect(gamePort, punterName) {
     socket.onopen = function(data) {
         logInfo("connection established.");
         setStatus("Connected; waiting for other punters...");
-        socket.send(hostname + ":" + gamePort + ":" + punterName);
+        send({
+          me: punterName
+        });
         return;
     };
 

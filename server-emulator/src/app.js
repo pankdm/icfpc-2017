@@ -35,8 +35,7 @@ const engine = new Engine(map, players);
 const wsServer = new WebSocket({ port: wsPort });
 wsServer.on('connection', (ws) => {
   winston.info('websocket connected');
-  const client = new WsClient(ws, engine);
-  engine.addClient(client);
+  const _ = new WsClient(ws, engine);
 });
 
 const tcpServer = createTcpServer((socket) => {

@@ -12,6 +12,7 @@ export default class Engine {
     this.queue = [];
     this.graphs = [];
     this.clients = [];
+    this.names = [];
 
     const weightGraph = new Graph({ directed: false });
     this.map.sites.forEach((site) => {
@@ -33,10 +34,14 @@ export default class Engine {
     return action.punter;
   }
 
-  addClient(client) {
+  addClient(client, name) {
     const id = this.clients.length;
     this.clients.push(client);
     client.setId(id);
+    this.names.push({
+      id: id,
+      name: name,
+    });
 
     if (this.clients.length === this.players) {
       this.beginGame();
@@ -127,7 +132,7 @@ export default class Engine {
 
     const dump = {
       map: this.map,
-      players: this.players,
+      players: this.names,
       moves: this.moves,
       scores: scores,
     };
@@ -137,6 +142,7 @@ export default class Engine {
         winston.error(err);
         this.graphs.length = 0;
         this.moves.length = 0;
+        this.names.length = 0;
       } else {
         jsonfile.writeFile(log, dump, { spaces: 2 }, (innerr) => {
           if (innerr) {
@@ -146,6 +152,7 @@ export default class Engine {
           }
           this.graphs.length = 0;
           this.moves.length = 0;
+          this.names.length = 0;
         });
       }
     });

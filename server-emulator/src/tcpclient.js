@@ -16,7 +16,7 @@ export default class TcpClient extends Client {
         this.send({
           you: msg.me,
         });
-        this.engine.addClient(this);
+        this.engine.addClient(this, msg.me);
       } else if (msg.ready !== undefined) {
         this.ready = true;
         this.engine.tryMoving();

@@ -6,7 +6,14 @@ export default class WsClient extends Client {
     super(socket, engine);
     socket.on('message', (data, _flags) => {
       winston.verbose(`data: ${data}`);
-      engine.doMove(Client.fromJson(data));
+      const msg = Client.fromJson(data.toString());
+
+      if (msg.me !== undefined) {
+        winston.verbose('handshake');
+        this.engine.addClient(this, msg.me);
+      } else if (msg.claim !== undefined || msg.pass !== undefined) {
+        this.engine.doMove(msg);
+      }
     });
 
     socket.on('error', (error) => {
