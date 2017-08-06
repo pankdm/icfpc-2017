@@ -177,6 +177,8 @@ class Server:
         # could be used to obtain results from outside
         self.final_score = {}
 
+        self.results_to_log = []
+
         result.sort(reverse=True)
         place = 1
         for score, punter_id in result:
@@ -188,5 +190,11 @@ class Server:
             final_score.score = score
             final_score.rank = place
             self.final_score[punter_id2name[punter_id]] = final_score
+
+            self.results_to_log.append({
+                "punter": punter_id2name[punter_id],
+                "score": score,
+                "rank": place,
+            })
 
             place += 1
