@@ -41,30 +41,29 @@ class VladSolver2:
     def _magic_moves(self, free_edges, id, padj, width):
         se = []
         for (u,v) in free_edges:
-            sc = 0
+            sc = 1
 
             # mine heuristic:
             if u in self.mines:
-                sc += 2
-                #sc += self.sum_mine_sc[u] / 5
-                if (u not in padj[id]) and (self.sum_mine_sc[u] >= 10):
-                    #sc += 20 + self.sum_mine_sc[u]
+                sc += 15
+                if (u not in padj[id]) and (self.sum_mine_sc[u] >= 5):
                     sc += 100
+                if v in padj[id]:
+                    sc += 12
             if v in self.mines:
-                sc += 2
-                #sc += self.sum_mine_sc[v] / 5
-                if (v not in padj[id]) and (self.sum_mine_sc[v] >= 10):
-                    #sc += 20 + self.sum_mine_sc[v]
+                sc += 15
+                if (v not in padj[id]) and (self.sum_mine_sc[v] >= 5):
                     sc += 100
+                if u in padj[id]:
+                    sc += 12
 
             # site heuristic
             #sc += self.sum_dist_sc[u] / 2
             #sc += self.sum_dist_sc[v] / 2
 
-            # adjacent to enemies heuristic:
-            for j in xrange(self.num):
-                if j != id and ((u in padj[j]) or (v in padj[j])):
-                    sc += 8
+            # adjacent to own edges:
+            if bool(v in padj[id]) ^ bool(u in padj[id]):
+                sc += 8
 
             # add edge with score
             sc += randint(0, 10)
@@ -161,7 +160,7 @@ class VladSolver2:
             for (u, d) in self.dist[mine].items():
                 if d <= 5:
                     self.sum_dist_sc[u] += d*d
-            self.sum_mine_sc[mine] = sum([d*d for (_,d) in self.dist[mine].items() if d <= 5])
+            self.sum_mine_sc[mine] = sum([d*d for (_,d) in self.dist[mine].items() if d <= 10])
 
     def _bfs(self, mine, adj):
         q = deque()
@@ -245,7 +244,7 @@ class VladSolver2:
 
         has_move = False
         if self.num_moves_left > self.greedy_threshold:
-            mvs = self._magic_moves(self.free_edges, self.id, self.padj, 100)
+            mvs = self._magic_moves(self.free_edges, self.id, self.padj, 200)
             if len(mvs) > 0:
                 se = []
                 for (u,v) in mvs:
@@ -257,7 +256,7 @@ class VladSolver2:
                 (u, v) = se[0][1]
                 has_move = True
                 if self.log:
-                    pprint("Greedy {} /{}: time {}; move: {}".format(
+                    pprint("Grdy {} /{}: time {}; move: {}".format(
                         self.name, self.num_moves_left, time() - tbegin, (u,v)))
 
         if not has_move:
