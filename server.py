@@ -1,4 +1,5 @@
 import json
+import time
 
 from pprint import pprint
 from copy import deepcopy
@@ -7,6 +8,7 @@ from collections import defaultdict
 from graph_util import (
     add_edge,
     compute_distances,
+    compute_all_distances,
     run_bfs,
     World,
 )

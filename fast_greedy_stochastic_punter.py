@@ -9,6 +9,7 @@ from timeit import default_timer as timer
 from graph_util import *
 from union_find_scores import *
 from client import *
+import graph_util
 
 class FastGreedyStochasticPunter:
     def __init__(self, config):
@@ -40,44 +41,22 @@ class FastGreedyStochasticPunter:
         self.num_punters = data["punters"]
 
         map_data = data["map"]
-        self.graph = defaultdict(set)
-        n = 0
-        for river in map_data["rivers"]:
-            s = river["source"]
-            t = river["target"]
-
-            # assume no multiedges for now
-            assert t not in self.graph[s]
-            assert s not in self.graph[t]
-
-            self.graph[s].add(t)
-            self.graph[t].add(s)
-
-            n = max(n, s)
-            n = max(n, t)
-        n += 1
+        self.world = graph_util.World(map_data)
+        self.graph = self.world.graph
         self.graph_readonly = deepcopy(self.graph)
 
-        self.mines = set()
-        for mine in map_data["mines"]:
-            self.mines.add(mine)
+        self.mines = self.world.mines
 
-        # compute the scores to each city
-        # map : city -> mine -> score
-        self.distances = defaultdict(dict)
-        for mine in self.mines:
-            scores = run_bfs(mine, self.graph)
-            for city, score in scores.items():
-                self.distances[city][mine] = score
+        self.distances = graph_util.compute_all_distances(self.world)
 
         if self.config.log:
             print('Calculated distances')
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(n, self.mines, self.distances)
+        self.components = ComponentsListWithScores(self.world.n, self.mines, self.distances)
         self.components.start_transaction()
-        for i in xrange(n):
+        for i in xrange(self.world.n):
             for x in self.graph[i]:
                 self.components.add_edge(i, x)
         # maintain graph of our nodes
