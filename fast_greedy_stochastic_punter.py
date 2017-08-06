@@ -160,6 +160,8 @@ class FastGreedyStochasticPunter:
                     n_transactions = 0
                     j = 0
                     while j < stochastic_edges:
+                        while (time.clock() - begin)*len(all_edges) > 0.7:
+                            break
                         if 0 != self.components.num_edges():
                             random_edge = self.components.random_edge()
                             # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
