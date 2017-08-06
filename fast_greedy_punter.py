@@ -132,6 +132,7 @@ class FastGreedyPunter:
         for s, nodes in self.graph.items():
             for t in nodes:
                 all_edges.append( (s, t) )
+        random.shuffle(all_edges)
 
         best_score = None
         best_st = None
@@ -203,7 +204,7 @@ class FastGreedyPunter:
                         self.components.union(s, t)
 
         # take one at random
-        if False and self.num_moves == 1:
+        if self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
             if self.config.log:
                 print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
