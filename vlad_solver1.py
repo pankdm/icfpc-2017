@@ -16,7 +16,7 @@ class Node:
 class VladSolver1:
     def __init__(self, config):
         self.name = config.name
-        self.timeout = config.timeout
+        self.timeout = getattr(config, 'timeout', 0.95)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
         h = hash(repr((padj,id, num_moves_left)))
