@@ -17,7 +17,7 @@ class FastGreedyStochasticPunter:
         self.num_moves = 0
         self.config = config
         self.weight_score = 1.0
-        self.weight_stochastic = 1.0
+        self.weight_stochastic = 0.3
         self.weight_bridges = 0.0
 
 
@@ -53,8 +53,11 @@ class FastGreedyStochasticPunter:
         self.distances = graph_util.compute_all_distances(self.world)
         t0 = time.clock()
         self.bridge_scores = graph_util.compute_bridge_scores(self.world, self.distances)
+
         if self.config.log:
             print("compute_bridge_scores = %f" % (time.clock() - t0))
+            for e, v in self.bridge_scores.iteritems():
+                print("bridge score for %s=%f" % (str(e), v))
 
         if self.config.log:
             print('Calculated distances')
@@ -257,7 +260,7 @@ class FastGreedyStochasticMaxPunter(FastGreedyStochasticPunter):
 class FastGreedyStochasticBridgesMaxPunter(FastGreedyStochasticMaxPunter):
     def __init__(self, config):
         FastGreedyStochasticMaxPunter.__init__(self, config)
-        self.weight_bridges = 1.0
+        self.weight_bridges = 10.0
 
 
 if __name__ == "__main__":

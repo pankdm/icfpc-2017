@@ -199,8 +199,8 @@ class Server:
         place = 1
         for score, punter_id in result:
             if self.config.log:
-                print('{} --> punter \'{}\' with {} score'.format(
-                    place, punter_id2name[punter_id], score))
+                print('{} --> punter \'{}\', id {} with {} score'.format(
+                    place, punter_id2name[punter_id], punter_id, score))
 
             final_score = FinalScore()
             final_score.score = score
