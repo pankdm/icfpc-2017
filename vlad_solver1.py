@@ -56,6 +56,8 @@ class VladSolver1:
                 (u,v) = root.vchild[i][0]   # "apply" selected move
                 padj[id][u].append(v)
                 padj[id][v].append(u)
+                free_edges.discard((u,v))
+                free_edges.discard((v,u))
                 root.vchild[i][2] += 1      # update edge stat
                 root = root.vchild[i][1]    # advance
 
@@ -71,7 +73,7 @@ class VladSolver1:
         id = self.id
         for node in path:
             node.nsimul += 1
-            node.score += scores[id]
+            node.score += scores[(id - 1 + self.num) % self.num]
             id = (id + 1) % self.num
 
     def _mcts_playout(self, root, id, padj, free_edges, num_moves_left):
@@ -93,7 +95,8 @@ class VladSolver1:
                 res = self._bfs(m, padj[id])
                 score += sum([d*d for (_,d) in res.items()])
             scores.append(score)
-        return scores
+        mx = max(scores) + 0.0
+        return [s / mx for s in scores]
 
     def _compute_distances(self):
         for mine in self.mines:
@@ -175,7 +178,7 @@ class VladSolver1:
                 self.padj[id][v].append(u)
                 self.free_edges.discard( (u,v) )
                 self.free_edges.discard( (v,u) )
-                self.num_moves_left -= 1
+            self.num_moves_left -= 1
 
         self.tr = {}
         root = self._get_node(
