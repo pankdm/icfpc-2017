@@ -10,6 +10,7 @@ import os
 import q3maps
 import json
 import string
+import time
 
 def random_string(N):
     return ''.join(random.choice(string.ascii_lowercase) for _ in range(N))
@@ -84,6 +85,7 @@ class Q3Arena:
             "map_settings": map_settings,
             "settings": settings,
             "results": s.results_to_log,
+            "ts": int(time.time()),
         }
         self.write_data(data)
 
