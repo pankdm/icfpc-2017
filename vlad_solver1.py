@@ -18,6 +18,7 @@ class VladSolver1:
         self.name = config.name
         self.timeout = getattr(config, 'timeout', 0.95)
         self.sum_norm = getattr(config, 'sum_norm', False)
+        self.playout_max_depth = getattr(config, 'playout_max_depth', 9999)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
         h = hash(repr((padj,id, num_moves_left)))
@@ -81,10 +82,15 @@ class VladSolver1:
         rnd_edges = list(free_edges)
         shuffle(rnd_edges)
 
+        num_played = 0
         for (u,v) in rnd_edges:
             if num_moves_left == 0:
                 break
+            if num_played >= self.playout_max_depth:
+                break
             num_moves_left -= 1
+            num_played += 1
+
             padj[id][u].append(v)
             padj[id][v].append(u)
             id = (id + 1) % self.num
@@ -100,7 +106,7 @@ class VladSolver1:
             mx = sum(scores) + 0.0
         else:
             mx = max(scores) + 0.0
-        return [s / mx for s in scores]
+        return [s / max([mx, 0.001]) for s in scores]
 
     def _compute_distances(self):
         for mine in self.mines:
@@ -171,7 +177,6 @@ class VladSolver1:
         tbegin = time()
 
         if 'stop' in data:
-            #print()
             self.process_stop(data)
             return
 
@@ -208,8 +213,7 @@ class VladSolver1:
         i = max(opts)[1]
         (u,v) = root.vchild[i][0]   # best move (haha)
 
-        #pprint("MCTS: nsimul {}; time {}; move: {}".format(
-        #    root.nsimul, time() - tbegin, (u,v)))
-        #printf('.')
+        pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
+            self.name, self.num_moves_left, root.nsimul, time() - tbegin, (u,v)))
 
         return {'claim': {'punter': self.id, 'source': u, 'target': v}}

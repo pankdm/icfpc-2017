@@ -28,31 +28,38 @@ class Stats:
             output += ' | {}: {:.2f} ({:.2f} rank)'.format(punter, avg, avg_rank)
         print 'Round {} ### {}'.format(self.num_rounds, output)
 
-def run_battle(stats):
+def run_battle(stats, it):
     map_file = sys.argv[1]
 
     if len(sys.argv) > 2:
         seed = int(sys.argv[2])
     else:
         seed = random.randint(0, 1000)
-    # print 'Running with seed: {}'.format(seed)
     random.seed(seed)
 
     punters = [
         #create_punter(GreedyPunter, log=False, name="Greedy 1"),
         #create_punter(ChaosPunter, log=False, name="Chaos1"),
-        
+
         #create_punter(FastGreedyStochasticPunter, name="FastStoch"),
         #create_punter(FastGreedyStochasticMaxPunter, name="FastStochMax"),
         #create_punter(VladSolver1, name="Vlad MCTS", timeout=0.95),
-        
 
-        create_punter(VladSolver1, name="Vlad MCTS SW", timeout=0.45, sum_norm=False),
-        create_punter(VladSolver1, name="Vlad MCTS S", timeout=0.45, sum_norm=True),
+        #create_punter(VladSolver1, name="Vlad MCTS max", timeout=0.45, sum_norm=False),
+        #create_punter(VladSolver1, name="Vlad MCTS inf", timeout=0.45, sum_norm=True),
+        #create_punter(FastGreedyStochasticPunter, name="FastStoch"),
+        create_punter(FastGreedyPunter, name="FastGreedy"),
+        #create_punter(VladSolver1, name="Vlad MCTS 010", timeout=0.45, sum_norm=True, playout_max_depth=10),
+        create_punter(VladSolver1, name="Vlad MCTS 100", timeout=0.45, sum_norm=True, playout_max_depth=100),
     ]
     settings = {
         "futures": True
     }
+
+    # rotate punters to have more consistent results
+    it = it % len(punters)
+    punters = punters[it : ] + punters[ : it]
+    # print punters
 
     s = Server(punters, map_file, settings)
     s.run()
@@ -64,6 +71,8 @@ def run_battle(stats):
 if __name__ == "__main__":
     stats = Stats()
 
+    it = 0
     while True:
-        run_battle(stats)
+        run_battle(stats, it)
         stats.show_results()
+        it += 1
