@@ -1,10 +1,9 @@
 
 
-def create_punter(cls, log=False, name="", futures=False):
+def create_punter(cls, **kwargs):
     c = Config()
-    c.log = log
-    c.name = name
-    c.futures = futures
+    for k, v in kwargs.items():
+        setattr(c, k, v)
     return cls(c)
 
 class Config:
