@@ -13,10 +13,12 @@ if __name__ == "__main__":
     map_file = sys.argv[1]
 
     punters = [
-        create_punter(VladSolver1, name="Vlad MCTS 1"),
-        create_punter(VladSolver1, name="Vlad MCTS 1b", timeout=0.5),
-        #create_punter(ChaosPunter, log=False, name="ChaosPunter 1"),
+        create_punter(ChaosPunter, log=False, name="ChaosPunter 1"),
+        create_punter(GreedyPunter, log=False, name="Greedy 1"),
+        #create_punter(VladSolver1, name="Vlad MCTS 1"),
+
         #create_punter(GreedyPunter, log=False, name="Greedy 1"),
+        #create_punter(VladSolver1, name="Vlad MCTS 1b", timeout=2.0),
     ]
     settings = {
         "futures": False
