@@ -19,8 +19,9 @@ class ComponentsListWithScores:
     def union(self, i, j):
         if i > j:
             i, j = j, i
+        self.edges_.remove( (i, j) )
         self.transctions_edges_[-1].append( (i, j) )
-        seld.edges_.remove( (i, j) )
+
         i = self.component(i)
         j = self.component(j)
         for x in self.lists_[i]:
@@ -52,6 +53,10 @@ class ComponentsListWithScores:
         self.transctions_edges_.append([])
 
     def rollback_transaction(self):
+        for e in self.transctions_edges_[-1]:
+            self.edges_.add(e)
+        self.transctions_edges_.pop()
+
         for t in self.transactions_[-1]:
             if t[0] == '+':
                 self.lists_[t[2]].add(t[1])
@@ -59,9 +64,10 @@ class ComponentsListWithScores:
             else:
                 self.lists_[t[2]].remove(t[1])
         self.transactions_.pop()
+        
         self.score_ = self.transctions_scores_[-1]
         self.transctions_scores_.pop()
-
+        
     def component(self, v):
         return self.vertices_[v]
 
@@ -71,10 +77,21 @@ class ComponentsListWithScores:
     def score(self):
         return self.score_
 
-    def add_egde(self, s, t):
+    def add_edge(self, s, t):
         if s > t:
             s, t = t, s
-        self.edges_.insert( (s, t) )
+        self.edges_.add( (s, t) )
+
+    def remove_edge(self, s, t):
+        if s > t:
+            s, t = t, s
+        self.edges_.remove( (s, t) )
+
+    def num_edges(self):
+        return len(self.edges_)
+
+    def random_edge(self):
+        return random.sample(self.edges_, 1)[0]
 
 if __name__ == "__main__":
     cl = ComponentsList(5)

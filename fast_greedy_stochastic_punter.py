@@ -9,21 +9,22 @@ from graph_util import *
 from union_find_scores import *
 from client import *
 
-def compute_score_slow(graph, mines, distances):
-    total_score = 0
-    for mine in mines:
-        scores = run_bfs(mine, graph)
-        for target in scores:
-            d = distances.get(target, {}).get(mine, 0)
-            total_score += d * d
-    return total_score
-
-
-class FastGreedyPunter:
+class FastGreedyStochasticPunter:
     def __init__(self, config):
         self.name = "greedy monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
+
+
+    def compute_score_slow(graph, mines, distances):
+        total_score = 0
+        for mine in mines:
+            scores = run_bfs(mine, graph)
+            for target in scores:
+                d = distances.get(target, {}).get(mine, 0)
+                total_score += d * d
+        return total_score
+
 
     def get_handshake(self):
         return {"me": self.name}
@@ -50,6 +51,7 @@ class FastGreedyPunter:
 
             self.graph[s].add(t)
             self.graph[t].add(s)
+
             n = max(n, s)
             n = max(n, t)
         n += 1
@@ -73,6 +75,7 @@ class FastGreedyPunter:
                 print('{} -> {}'.format(city, scores))
 
         self.components = ComponentsListWithScores(n, self.mines, self.distances)
+        self.components.start_transaction()
         for i in xrange(n):
             for x in self.graph[i]:
                 self.components.add_edge(i, x)
@@ -141,20 +144,31 @@ class FastGreedyPunter:
             if self.components.component(s) != self.components.component(t):
                 self.components.start_transaction()
                 self.components.union(s, t)
-                # print ''
-                # print 'Computing score for {}'.format(st)
-                # print 'components of s={}: {}'.format(s, self.components.components()[s])
-                # print 'components of t={}: {}'.format(t, self.components.components()[t])
-                score = self.components.score()
 
-                # if self.config.log:
-                #     my_graph_copy = deepcopy(self.my_graph)
-                #     add_edge(my_graph_copy, st)
-                #     slow_score = compute_score_slow(my_graph_copy, self.mines, self.distances)
-                #     if score != slow_score:
-                #         print "ERROR: different score for {}, {} vs {} (slow)".format(
-                #             st, score, slow_score)
-                #
+                score_before_random = self.components.score()
+                score_random_gain = 0
+                n_iterations = 0
+                stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
+                for i in xrange(10):
+                    n_transactions = 0
+                    for j in xrange(stochastic_edges):
+                        if 0 != self.components.num_edges():
+                            random_edge = self.components.random_edge()
+                            # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
+                            if self.components.component(random_edge[0]) != self.components.component(random_edge[1]):
+                                self.components.start_transaction()
+                                self.components.union(random_edge[0], random_edge[1])
+                                n_transactions += 1
+                    n_iterations += 1
+                    score_random_gain += self.components.score() - score_before_random
+                    for j in xrange(n_transactions):
+                        self.components.rollback_transaction()
+    
+                if 0 != n_iterations:
+                    score_random_gain = float(score_random_gain)/n_iterations
+
+                score = self.components.score() + score_random_gain
+
                 if best_score is None or score > best_score:
                     best_score = score
                     best_st = st
@@ -192,15 +206,16 @@ class FastGreedyPunter:
                 if "claim" in move:
                     s = move["claim"]["source"]
                     t = move["claim"]["target"]
-                    st = (s,t)
+                    st = (s, t)
                     remove_edge(self.graph, st)
 
                     punter_id = move["claim"]["punter"]
                     if punter_id == self.punter_id:
                         add_edge(self.my_graph, st)
 
-                        self.components.start_transaction()
                         self.components.union(s, t)
+                    else:
+                        self.components.remove_edge(s, t)
 
         # take one at random
         if False and self.num_moves == 1:
@@ -226,6 +241,6 @@ if __name__ == "__main__":
     config = Config()
     config.log = True
 
-    punter = FastGreedyPunter(config)
+    punter = FastGreedyStochasticPunter(config)
     client = Client(LOCALHOST, 9999)
     client.run(punter)
