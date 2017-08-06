@@ -44,11 +44,11 @@ class VladSolver1:
 
             # mine heuristic:
             if u in self.mines:
-                sc += 1
+                sc += 2
                 if u not in padj[id]:
                     sc += 100
             if v in self.mines:
-                sc += 1
+                sc += 2
                 if v not in padj[id]:
                     sc += 100
 

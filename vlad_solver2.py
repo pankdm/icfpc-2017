@@ -22,6 +22,7 @@ class VladSolver2:
         self.playout_max_depth = getattr(config, 'playout_max_depth', 9999)
         self.search_width = getattr(config, 'search_width', 9999)
         self.magic_moves = getattr(config, 'magic_moves', False)
+        self.greedy_threshold = getattr(config, 'greedy_threshold', 9999)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
         h = hash(repr((padj,id, num_moves_left)))
@@ -30,41 +31,47 @@ class VladSolver2:
         else:
             node = Node()
             if self.magic_moves:
-                node.uchild = self._magic_moves(free_edges, id, padj)
+                node.uchild = self._magic_moves(free_edges, id, padj, self.search_width)
             else:
                 rnd_edges = list(free_edges); shuffle(rnd_edges)
                 node.uchild = deque(rnd_edges[0:self.search_width])
             self.tr[h] = node
             return node
 
-    def _magic_moves(self, free_edges, id, padj):
+    def _magic_moves(self, free_edges, id, padj, width):
         se = []
         for (u,v) in free_edges:
             sc = 0
 
             # mine heuristic:
             if u in self.mines:
-                if u not in padj[id]:
-                    sc += self.sum_mine_sc[u]
+                sc += 2
+                #sc += self.sum_mine_sc[u] / 5
+                if (u not in padj[id]) and (self.sum_mine_sc[u] >= 10):
+                    #sc += 20 + self.sum_mine_sc[u]
+                    sc += 100
             if v in self.mines:
-                if v not in padj[id]:
-                    sc += self.sum_mine_sc[v]
+                sc += 2
+                #sc += self.sum_mine_sc[v] / 5
+                if (v not in padj[id]) and (self.sum_mine_sc[v] >= 10):
+                    #sc += 20 + self.sum_mine_sc[v]
+                    sc += 100
 
             # site heuristic
-            sc += self.sum_dist_sc[u]
-            sc += self.sum_dist_sc[v]
+            #sc += self.sum_dist_sc[u] / 2
+            #sc += self.sum_dist_sc[v] / 2
 
             # adjacent to enemies heuristic:
             for j in xrange(self.num):
                 if j != id and ((u in padj[j]) or (v in padj[j])):
-                    sc += 5
+                    sc += 8
 
             # add edge with score
             sc += randint(0, 10)
             se.append( (sc, (u,v)) )
 
         se.sort(reverse=True)
-        return deque([e for (_,e) in se[0:self.search_width]])
+        return deque([e for (_,e) in se[0:width]])
 
     def _mcts_iter(self, root, padj, free_edges, num_moves_left):
         id = self.id
@@ -131,6 +138,9 @@ class VladSolver2:
             padj[id][v].append(u)
             id = (id + 1) % self.num
         
+        return self._eval(padj)
+
+    def _eval(self, padj):
         scores = []
         for id in range(self.num):
             score = 0
@@ -233,31 +243,49 @@ class VladSolver2:
                 self.free_edges.discard( (v,u) )
             self.num_moves_left -= 1
 
-        self.tr = {}
-        root = self._get_node(
-                self.padj,
-                self.id,
-                self.num_moves_left,
-                self.free_edges)
+        has_move = False
+        if self.num_moves_left > self.greedy_threshold:
+            mvs = self._magic_moves(self.free_edges, self.id, self.padj, 100)
+            if len(mvs) > 0:
+                se = []
+                for (u,v) in mvs:
+                    padj = deepcopy(self.padj)
+                    padj[self.id][u].append(v)
+                    padj[self.id][v].append(u)
+                    se.append( (self._eval(padj)[self.id], (u,v)) )
+                se.sort(reverse=True)
+                (u, v) = se[0][1]
+                has_move = True
+                if self.log:
+                    pprint("Greedy {} /{}: time {}; move: {}".format(
+                        self.name, self.num_moves_left, time() - tbegin, (u,v)))
 
-        while time() < tbegin + self.timeout:
-            self._mcts_iter(
-                root,
-                deepcopy(self.padj),
-                deepcopy(self.free_edges),
-                self.num_moves_left)
+        if not has_move:
+            self.tr = {}
+            root = self._get_node(
+                    self.padj,
+                    self.id,
+                    self.num_moves_left,
+                    self.free_edges)
 
-        opts = []
-        for i in range(len(root.vchild)):
-            cnode = root.vchild[i][1]
-            sc = (cnode.score + 0.0) / cnode.nsimul
-            opts.append( (sc, i) )
+            while time() < tbegin + self.timeout:
+                self._mcts_iter(
+                    root,
+                    deepcopy(self.padj),
+                    deepcopy(self.free_edges),
+                    self.num_moves_left)
 
-        i = max(opts)[1]
-        (u,v) = root.vchild[i][0]   # best move (haha)
+            opts = []
+            for i in range(len(root.vchild)):
+                cnode = root.vchild[i][1]
+                sc = (cnode.score + 0.0) / cnode.nsimul
+                opts.append( (sc, i) )
 
-        if self.log:
-            pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
-                self.name, self.num_moves_left, root.nsimul, time() - tbegin, (u,v)))
+            i = max(opts)[1]
+            (u,v) = root.vchild[i][0]   # best move (haha)
+
+            if self.log:
+                pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
+                    self.name, self.num_moves_left, root.nsimul, time() - tbegin, (u,v)))
 
         return {'claim': {'punter': self.id, 'source': u, 'target': v}}
