@@ -101,4 +101,5 @@ def run():
 
 
 if __name__ == "__main__":
+    os.system("mkdir -p arena/results")
     run()
