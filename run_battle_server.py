@@ -31,7 +31,7 @@ class Stats:
 
 
 
-def run_battle(stats):
+def run_battle(stats, it):
     map_file = sys.argv[1]
 
     if len(sys.argv) > 2:
@@ -59,6 +59,11 @@ def run_battle(stats):
         "futures": True
     }
 
+    # rotate punters to have more consistent results
+    it = it % len(punters)
+    punters = punters[it : ] + punters[ : it]
+    # print punters
+
     s = Server(punters, map_file, settings)
     s.run()
 
@@ -69,6 +74,8 @@ def run_battle(stats):
 if __name__ == "__main__":
     stats = Stats()
 
+    it = 0
     while True:
-        run_battle(stats)
+        run_battle(stats, it)
         stats.show_results()
+        it += 1
