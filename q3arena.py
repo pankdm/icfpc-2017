@@ -108,6 +108,7 @@ class Q3Arena:
             "settings": settings,
             "results": s.results_to_log,
             "ts": int(time.time()),
+            "arena_version": ARENA_VERSION,
             # "battle_id": str(battle_id),
         }
         self.write_data(data, webserver_data)
