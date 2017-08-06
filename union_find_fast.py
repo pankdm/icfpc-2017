@@ -21,6 +21,8 @@ class UnionFindFast:
 
         self.score_ -= self.totals_[ri]
         self.score_ -= self.totals_[rj]
+        self.totals_[ri] += self.totals_[rj]
+        self.totals_[rj] = 0
 
         for (index, mine) in self.mn_[ri]:
             self.totals_[ri] += self.scores_[rj][index]
@@ -28,14 +30,16 @@ class UnionFindFast:
         for (index, mine) in self.mn_[rj]:
             self.totals_[ri] += self.scores_[ri][index]
 
-        self.totals_[ri] += self.totals_[rj]
         self.score_ += self.totals_[ri]
 
         self.id_[rj] = ri
         self.sz_[ri] += self.sz_[rj]
+        self.sz_[rj] = 0
         self.mn_[ri] += self.mn_[rj]
+        self.mn_[rj] = []
         for k in xrange(len(self.mines_)):
             self.scores_[ri][k] += self.scores_[rj][k]
+        self.scores_[rj] = []
 
     def find(self, i, j):
         return root(i) == root(j)
