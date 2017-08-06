@@ -16,6 +16,9 @@ class FastGreedyStochasticPunter:
         self.name = "greedy monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
+        self.weight_score = 1.0
+        self.weight_stochastic = 1.0
+        self.weight_bridges = 0.0
 
 
     def compute_score_slow(graph, mines, distances):
@@ -171,7 +174,7 @@ class FastGreedyStochasticPunter:
                         self.components.rollback_transaction()
     
                 max_score_random_gain = max(max_score_random_gain, score_random_gains[-1])
-                score = self.components.score() + self._aggregate_random_scores(score_random_gains) + bridge_score_gain
+                score = self.weight_score*self.components.score() + self.weight_stochastic*self._aggregate_random_scores(score_random_gains) + self.weight_bridges*bridge_score_gain
                 # if self.config.log:
                 #     print("%f %f %f" % (self.components.score() - current_score, self._aggregate_random_scores(score_random_gains), bridge_score_gain))
 
@@ -245,9 +248,17 @@ class FastGreedyStochasticPunter:
             },
         }
 
+
 class FastGreedyStochasticMaxPunter(FastGreedyStochasticPunter):
     def _aggregate_random_scores(self, scores):
         return float(max(scores))//2
+
+
+class FastGreedyStochasticBridgesMaxPunter(FastGreedyStochasticMaxPunter):
+    def __init__(self, config):
+        FastGreedyStochasticMaxPunter.__init__(self, config)
+        self.weight_bridges = 1.0
+
 
 if __name__ == "__main__":
     config = Config()
