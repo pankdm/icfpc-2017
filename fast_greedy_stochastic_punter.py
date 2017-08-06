@@ -142,7 +142,10 @@ class FastGreedyStochasticPunter:
         current_score = self.components.score()
         max_score_random_gain = 0
         n_stochastic_steps = 0
+        begin0 = time.clock()
         for st in all_edges:
+            if time.clock() > begin0 + 0.9:
+                break
             s, t = st
             if self.components.component(s) != self.components.component(t):
                 self.components.start_transaction()
@@ -153,7 +156,7 @@ class FastGreedyStochasticPunter:
                 n_iterations = 0
                 stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
                 begin = time.clock()
-                while (time.clock() - begin)*len(all_edges) < 0.8:
+                while (time.clock() - begin)*len(all_edges) < 0.7:
                     n_transactions = 0
                     j = 0
                     while j < stochastic_edges:
