@@ -65,7 +65,7 @@ def run():
 
             for player, bs in ll:
                 if player == "chaos monkey": continue
-                print '>>   {} --> {} rank, {} score ({} games)'.format(
+                print '>>   {} --> {:.3f} rank, {:.2f} score ({} games)'.format(
                     player,
                     bs.get_avg_rank_score(),
                     bs.get_avg_game_score(),
