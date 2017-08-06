@@ -48,13 +48,17 @@ class FastGreedyStochasticPunter:
         self.mines = self.world.mines
 
         self.distances = graph_util.compute_all_distances(self.world)
+        t0 = time.clock()
+        self.bridge_scores = graph_util.compute_bridge_scores(self.world, self.distances)
+        if self.config.log:
+            print("compute_bridge_scores = %f" % (time.clock() - t0))
 
         if self.config.log:
             print('Calculated distances')
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.n, self.mines, self.distances)
+        self.components = ComponentsListWithScores(self.world.n, self.mines, self.distances, self.bridge_scores)
         self.components.start_transaction()
         for i in xrange(self.world.n):
             for x in self.graph[i]:
@@ -125,6 +129,7 @@ class FastGreedyStochasticPunter:
         best_score = None
         best_st = None
         current_score = self.components.score()
+        current_bridge_score = self.components.bridge_score()
         max_score_random_gain = 0
         n_stochastic_steps = 0
         begin0 = time.clock()
@@ -144,6 +149,7 @@ class FastGreedyStochasticPunter:
                 stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
                 begin = time.clock()
                 c_move_time_limit = 0.7
+                bridge_score_gain = self.components.bridge_score() - current_bridge_score
                 while (time.clock() - begin)*len(all_edges) < c_move_time_limit:
                     n_transactions = 0
                     j = 0
@@ -165,14 +171,16 @@ class FastGreedyStochasticPunter:
                         self.components.rollback_transaction()
     
                 max_score_random_gain = max(max_score_random_gain, score_random_gains[-1])
-                score = self.components.score() + self._aggregate_random_scores(score_random_gains)
+                score = self.components.score() + self._aggregate_random_scores(score_random_gains) + bridge_score_gain
+                # if self.config.log:
+                #     print("%f %f %f" % (self.components.score() - current_score, self._aggregate_random_scores(score_random_gains), bridge_score_gain))
 
                 if best_score is None or score > best_score:
                     best_score = score
                     best_st = st
                 self.components.rollback_transaction()
         if self.config.log:
-            print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps, float(n_processed)/len(all_edges))
+             print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps, float(n_processed)/len(all_edges))
 
         if self.config.log:
             print('Found {} that would give score {}'.format(best_st, best_score - current_score))

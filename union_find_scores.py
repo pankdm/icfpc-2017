@@ -1,26 +1,33 @@
 import random
 
 class ComponentsListWithScores:
-    def __init__(self, n, mines, distances):
+    def __init__(self, n, mines, distances, bridge_scores = {}):
         self.lists_ = []
         self.vertices_ = []
         for i in range(n):
             self.lists_.append(set())
             self.lists_[i].add(i)
             self.vertices_.append(i)
-        self.transactions_ = []
-        self.transctions_scores_ = []
-        self.transctions_edges_ = []
         self.score_ = 0
         self.mines_ = mines
         self.distances_ = distances
+        self.bridge_scores_ = bridge_scores
         self.edges_ = set()
+        self.bridge_score_ = 0
+        
+        self.transactions_ = []
+        self.transctions_scores_ = []
+        self.transctions_edges_ = []
+        self.transactions_bridge_scores_ = []
 
     def union(self, i, j):
         if i > j:
             i, j = j, i
         self.edges_.remove( (i, j) )
         self.transctions_edges_[-1].append( (i, j) )
+
+        if (i, j) in self.bridge_scores_:
+            self.bridge_score_ += self.bridge_scores_[(i, j)]
 
         i = self.component(i)
         j = self.component(j)
@@ -51,6 +58,7 @@ class ComponentsListWithScores:
         self.transactions_.append([])
         self.transctions_scores_.append(self.score_)
         self.transctions_edges_.append([])
+        self.transactions_bridge_scores_.append(self.bridge_score_)
 
     def rollback_transaction(self):
         for e in self.transctions_edges_[-1]:
@@ -68,6 +76,9 @@ class ComponentsListWithScores:
         self.score_ = self.transctions_scores_[-1]
         self.transctions_scores_.pop()
         
+        self.bridge_score_ = self.transactions_bridge_scores_[-1]
+        self.transactions_bridge_scores_.pop()
+
     def component(self, v):
         return self.vertices_[v]
 
@@ -76,6 +87,9 @@ class ComponentsListWithScores:
 
     def score(self):
         return self.score_
+
+    def bridge_score(self):
+        return self.bridge_score_
 
     def add_edge(self, s, t):
         if s > t:

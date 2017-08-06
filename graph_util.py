@@ -78,6 +78,25 @@ def compute_all_distances(world):
     return distances
 
 
+def compute_bridge_scores(world, all_distances):
+    result = {}
+    for st, fs in world.graph.iteritems():
+        for f in fs:
+            result[ (st, f) ] = 0
+            result[ (f, st) ] = 0
+            for mine in world.mines:
+                if mine in all_distances[st] and mine in all_distances[f]:
+                    dst = all_distances[st][mine]
+                    df = all_distances[f][mine]
+                    for v in world.mines:
+                        if mine in all_distances[v]:
+                            dv = all_distances[v][mine]
+                            if dv == dst + all_distances[f][v] + 1 or dv == df + all_distances[st][v]:
+                                result[ (st, f) ] += 1
+                                result[ (f, st) ] += 1
+    return result
+
+
 def floyd_warshall(graph):
     n = 0
     for s, ts in graph.iteritems():
