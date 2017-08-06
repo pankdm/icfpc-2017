@@ -26,5 +26,8 @@ BIG_MAPS = [
     m("oxford2-sparse-2.json", n=16),
     m("van-city-sparse.json", n=16),
 ]
+
+ORIGINAL_MAPS = MAPS + BIG_MAPS
+
 random.shuffle(BIG_MAPS)
 MAPS.extend(BIG_MAPS)
