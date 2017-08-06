@@ -197,9 +197,12 @@ class VladSolver1:
         opts = []
         for i in range(len(root.vchild)):
             cnode = root.vchild[i][1]
-            ccnt = root.vchild[i][2]
             sc = (cnode.score + 0.0) / cnode.nsimul
             opts.append( (sc, i) )
+
+        # TODO:
+        # mx = max(scores) + 0.0
+        # return [s / mx for s in scores]
 
         i = max(opts)[1]
         (u,v) = root.vchild[i][0]   # best move (haha)
