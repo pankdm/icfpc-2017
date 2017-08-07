@@ -11,6 +11,7 @@ MAPS = [
     m("lambda.json", n=4),
     m("circle.json", n=4),
     m("Sierpinski-triangle.json", n=3),
+    m("Sierpinski-triangleR.json", n=3),
 
     m("Sierpinski-triangle3.json", n=3), # disjoint map
 

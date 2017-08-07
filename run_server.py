@@ -3,6 +3,7 @@ from server import Server
 from fast_greedy_punter import FastGreedyPunter
 from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedyStochasticMaxPunter, FastGreedyStochasticBridgesMaxPunter, FastGreedyStochasticBridgesVerticesMaxPunter
 from vlad_solver2 import VladSolver2
+from vlad_solver4 import VladSolver4
 from greedy_punter import GreedyPunter
 from greedy_punter2 import GreedyPunter2
 from chaos_punter import ChaosPunter
@@ -30,6 +31,7 @@ if __name__ == "__main__":
         create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 3"),
         create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 4"),
         create_punter(VladSolver2, log=False, name="VladSolver2 1"),
+        create_punter(VladSolver4, log=False, name="VladSolver4 1"),
         create_punter(FastGreedyStochasticPunter, log=False, name="FastGreedyStochasticPunter 1"),
         create_punter(FastGreedyStochasticMaxPunter, log=False, name="FastGreedyStochasticMaxPunter 1"),
         create_punter(FastGreedyStochasticBridgesMaxPunter, log=False, name="FastGreedyStochasticBridgesMaxPunter 1"),
