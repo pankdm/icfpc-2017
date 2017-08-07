@@ -21,7 +21,7 @@ class FastGreedyStochasticPunter:
 
     def save(self):
         begin = time.clock()
-        sData = cPickle.dumps( (self.components) )
+        sData = cPickle.dumps( (self.components, self.world) )
         print("time", time.clock() - begin, "len", len(sData))
 
     def weight_score(self):
@@ -40,16 +40,6 @@ class FastGreedyStochasticPunter:
         return 0.0
     
     
-    def compute_score_slow(graph, mines, distances):
-        total_score = 0
-        for mine in mines:
-            scores = run_bfs(mine, graph)
-            for target in scores:
-                d = distances.get(target, {}).get(mine, 0)
-                total_score += d * d
-        return total_score
-
-
     def get_handshake(self):
         return {"me": self.name}
 
@@ -67,10 +57,11 @@ class FastGreedyStochasticPunter:
         self.graph = self.world.graph
         self.mines = self.world.mines
 
-        self.distances = graph_util.compute_all_distances(self.world)
+        self.distances = graph_util.compute_distances(self.world)
+        self.all_distances = graph_util.compute_all_distances(self.world)
         t0 = time.clock()
-        self.bridge_scores = graph_util.compute_bridge_scores(self.world, self.distances)
-        self.vertex_scores = graph_util.compute_vertices_centralness(self.world, self.distances)
+        self.bridge_scores = graph_util.compute_bridge_scores(self.world, self.all_distances)
+        self.vertex_scores = graph_util.compute_vertices_centralness(self.world, self.all_distances)
         for m in self.world.mines:
             self.vertex_scores[m] += 0.25
 
