@@ -7,7 +7,7 @@ class MetaPunter(offline_punter.OfflinePunter):
     def __init__(self, config):
         self.name = "greedy monkey" if not config.name else config.name
         self.config = config
-        self.fast = create_punter(fast_greedy_options.FastGreedyOptions, log=False, name=self.name)
+        self.fast = create_punter(fast_greedy_options.FastGreedyOptions, log=False, name=self.name, use_options=True)
         self.vlad = create_punter(vlad_solver2.VladSolver2, log=False, name=self.name)
         self.size = 0
 

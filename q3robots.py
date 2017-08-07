@@ -22,6 +22,7 @@ def create_all_robots():
         create_punter(FastGreedyPunter, name="FastGreedyPunter"),
         create_punter(FastGreedyPunter, name="FastSplurges", splurges_on_claim=True),
         create_punter(FastGreedyOptions, name="Fast Options", use_options=True),
+        create_punter(MetaPunter, name="Meta"),
     ]
 
 

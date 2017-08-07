@@ -4,6 +4,7 @@ from time import time, sleep
 from pprint import pprint
 from collections import deque, defaultdict
 from random import shuffle, randint
+import offline_punter
 
 class Node:
     def __init__(self):
@@ -13,7 +14,7 @@ class Node:
         self.uchild = deque()
 
 
-class VladSolver2:
+class VladSolver2(offline_punter.OfflinePunter):
     def get_state(self):
         state = []
         state.append(self.name)
