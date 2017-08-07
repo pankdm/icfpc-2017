@@ -1,0 +1,1 @@
+"{\"map\": \"maps/sample.json\", \"settings\": {\"splurges\": true, \"futures\": true, \"options\": true}, \"arena_version\": 17, \"ts\": 1502095569, \"results\": [{\"score\": 27, \"punter\": \"Vlad-MCTS-2j\", \"rank\": 1}, {\"score\": 9, \"punter\": \"FastSplurges\", \"rank\": 2}], \"map_settings\": {\"n\": 2}}"

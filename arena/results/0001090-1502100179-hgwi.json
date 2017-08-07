@@ -1,0 +1,1 @@
+"{\"map\": \"maps/sample.json\", \"settings\": {\"futures\": true}, \"arena_version\": 15, \"ts\": 1502100177, \"results\": [{\"score\": 12, \"punter\": \"Vlad-MCTS-2j\", \"rank\": 1}, {\"score\": 9, \"punter\": \"FastGreedyStochasticBridgesVerticesMaxPunter\", \"rank\": 2}], \"map_settings\": {\"n\": 2}}"
