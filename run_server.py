@@ -8,6 +8,7 @@ from vlad_solver4 import VladSolver4
 from greedy_punter import GreedyPunter
 from greedy_punter2 import GreedyPunter2
 from chaos_punter import ChaosPunter
+from meta_punter import MetaPunter
 
 from config import create_punter, Config
 
@@ -38,6 +39,7 @@ if __name__ == "__main__":
         create_punter(FastGreedyStochasticBridgesMaxPunter, log=False, name="FastGreedyStochasticBridgesMaxPunter 1"),
         create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, log=False, name="FastGreedyStochasticBridgesVerticesMaxPunter 1"),
         create_punter(FastGreedyOptions, log=False, name="FastGreedyOptions"),
+        create_punter(MetaPunter, log=False, name="MetaPunter"),
     ]
     random.shuffle(punters)
 

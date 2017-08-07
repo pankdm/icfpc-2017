@@ -1,6 +1,7 @@
 import offline_punter
 import vlad_solver2
 import fast_greedy_options
+from config import create_punter
 
 class MetaPunter(offline_punter.OfflinePunter):
     def __init__(self, config):
@@ -36,3 +37,9 @@ class MetaPunter(offline_punter.OfflinePunter):
             return self.vlad
         else:
             return self.fast
+    
+    def process_setup(self, data):
+        return self.get_punter().process_setup(data)
+    
+    def process_move(self, data):
+        return self.get_punter().process_move(data)
