@@ -44,7 +44,6 @@ def log_traceback(ex, ex_traceback=None):
 
 if __name__ == "__main__":
     try:
-        raise Exception("fdsfs")
         punter = create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, log=False, name="FastGreedyStochasticBridgesVerticesMaxPunter 1")
         hs = punter.get_handshake()
         writeOutputJson(hs)
