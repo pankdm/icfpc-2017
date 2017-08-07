@@ -68,6 +68,8 @@ class FastGreedyStochasticPunter:
         t0 = time.clock()
         self.bridge_scores = graph_util.compute_bridge_scores(self.world, self.distances)
         self.vertex_scores = graph_util.compute_vertices_centralness(self.world, self.distances)
+        for m in self.world.mines:
+            self.vertex_scores[m] += 0.25
 
         if self.config.log:
             print("vertex_scores", self.vertex_scores)
@@ -305,6 +307,8 @@ class FastGreedyStochasticBridgesMaxPunter(FastGreedyStochasticMaxPunter):
 
 class FastGreedyStochasticBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMaxPunter):
     def weight_vertices(self):
+        if self.num_moves < 2:
+            return 50.0
         if self.num_moves < math.sqrt(self.world.n):
             return 5.0
         return 0.0
