@@ -348,7 +348,7 @@ class VladSolver2(offline_punter.OfflinePunter):
                 (u,v) = root.vchild[i][0]   # best move (haha)
             else:
                 if 0 != len(self.free_edges):
-                    (u, v) = next(self.free_edges.iter())
+                    (u, v) = next(iter(self.free_edges))
                 else:
                     return {'pass': {'punter': self.id}}
 
