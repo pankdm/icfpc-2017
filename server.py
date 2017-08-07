@@ -4,6 +4,8 @@ import time
 from pprint import pprint
 from copy import deepcopy
 from collections import defaultdict
+from timeit import default_timer as timer
+
 
 from graph_util import (
     add_edge,
@@ -14,6 +16,9 @@ from graph_util import (
 )
 
 from config import Config
+
+SETUP_TIMEOUT_S = 10.
+MOVE_TIMEOUT_S = 1.
 
 
 class FinalScore:
@@ -208,7 +213,16 @@ class Server:
                 "name": p_name,
             })
             # Ignore reply for now
+            start = timer()
             reply = p.process_setup(data)
+            end = timer()
+            delta = end - start
+            if delta > SETUP_TIMEOUT_S:
+                print ('ERROR: robot {} took {}s for setup!!!'.format(
+                    p_name,
+                    delta
+                ))
+
             futures = reply.get("futures", [])
             if self.futures_enabled and futures:
                 f = futures[-1]
@@ -231,7 +245,17 @@ class Server:
                         "moves" : moves,
                     },
                 }
+                start = timer()
+                p_name = punter_id2name[p_index]
                 next_move = p.process_move(data)
+                end = timer()
+                delta = end - start
+                if delta > MOVE_TIMEOUT_S:
+                    print ('ERROR: robot {} took {}s for setup!!!'.format(
+                        p_name,
+                        delta
+                    ))
+
                 update_punter_id(next_move, p_index)
 
                 # apply move returns new
