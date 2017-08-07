@@ -23,9 +23,9 @@ def create_all_robots():
         create_punter(FastGreedyPunter, name="FastSplurges", splurges_on_claim=True),
         create_punter(FastGreedyOptions, name="Fast Options", use_options=True),
         create_punter(MetaPunter, name="Meta"),
+        create_punter(FastGreedyOptions, name="dummy Fast Options", use_options=False),
     ]
 
 
-
 # please increment when you add new robots
-ARENA_VERSION = 17
+ARENA_VERSION = 19
