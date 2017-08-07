@@ -220,7 +220,7 @@ class FastGreedyStochasticPunter:
         if self.config.log:
              print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps, float(n_processed)/len(all_edges), "best_score_gain", best_score_gain, "best_bridge_gain", best_bridge_gain, "best_vertex_gain", best_vertex_gain, "best_stochastic_gain", best_stochastic_gain)
 
-        if self.config.log:
+        if self.config.log and best_score:
             print('Found {} that would give score {}'.format(best_st, best_score))
 
         if best_score is None:

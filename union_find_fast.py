@@ -2,13 +2,13 @@ from copy import deepcopy
 
 class UnionFindFast:
     def __init__(self, n, mines, distances):
-        self.mines_ = mines
-        self.distances_ = distances
+        self.mines_ = len(mines)
         self.scores_ = [ [ x**2 for x in v.values() ] for v in distances.values() ]
         self.id_ = [ i for i in xrange(n) ]
         self.sz_ = [ 1 ] * n
-        self.mn_ = [ [ (mines.index(i), i) ] if i in mines else [] for i in xrange(n) ]
-        self.totals_ = [ 0 ] * n
+        self.mn_ = [[] for _ in xrange(n)]
+        for index, mine in enumerate(mines):
+            self.mn_[mine].append((index, mine))
         self.score_ = 0
 
     def union(self, i, j):
@@ -16,26 +16,24 @@ class UnionFindFast:
         rj = self.root(j)
         if ri == rj:
             return
+        
         if (self.sz_[ri] < self.sz_[rj]):
             ri, rj = rj, ri
 
-        self.score_ -= self.totals_[ri]
-        self.score_ -= self.totals_[rj]
-
         for (index, mine) in self.mn_[ri]:
-            self.totals_[ri] += self.scores_[rj][index]
+            self.score_ += self.scores_[rj][index]
 
         for (index, mine) in self.mn_[rj]:
-            self.totals_[ri] += self.scores_[ri][index]
-
-        self.totals_[ri] += self.totals_[rj]
-        self.score_ += self.totals_[ri]
+            self.score_ += self.scores_[ri][index]
 
         self.id_[rj] = ri
         self.sz_[ri] += self.sz_[rj]
+        self.sz_[rj] = 0
         self.mn_[ri] += self.mn_[rj]
-        for k in xrange(len(self.mines_)):
+        self.mn_[rj] = []
+        for k in xrange(self.mines_):
             self.scores_[ri][k] += self.scores_[rj][k]
+        self.scores_[rj] = []
 
     def find(self, i, j):
         return root(i) == root(j)
@@ -48,21 +46,6 @@ class UnionFindFast:
 
     def score(self):
         return self.score_
-        '''score = 0
-        for index, mine in enumerate(self.mines_):
-            root = self.root(mine)
-            score += self.scores_[root][index]
-        return score'''
-
-    def copy(self):
-        u = UnionFindFast(len(self.id_), self.mines_, self.distances_)
-        u.scores_ = deepcopy(self.scores_)
-        u.id_ = deepcopy(self.id_)
-        u.sz_ = deepcopy(self.sz_)
-        u.mn_ = deepcopy(self.mn_)
-        u.totals_ = deepcopy(self.totals_)
-        u.score_ = score_
-        return u
 
     def __str__(self):
         return "\n".join([
@@ -70,9 +53,7 @@ class UnionFindFast:
             'sz ' + str(self.sz_),
             'mines ' + str(self.mines_),
             'scores ' + str(self.scores_),
-            'totals ' + str(self.totals_),
             'mn ' + str(self.mn_), 
-            'score() ' + str(self.score()),
             'score ' + str(self.score_),
         ])
 

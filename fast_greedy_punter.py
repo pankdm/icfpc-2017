@@ -161,7 +161,7 @@ class FastGreedyPunter:
                     best_st = st
                 self.components.rollback_transaction()
 
-        if self.config.log:
+        if self.config.log and best_score:
             print('Found {} that would give score {}'.format(best_st, best_score - current_score))
 
         if best_score is None:
