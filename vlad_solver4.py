@@ -14,14 +14,16 @@ class VladSolver4:
         self.score_regularization = getattr(config, 'score_regularization', True)
         self.max_of = getattr(config, 'max_of', 'min')
 
-    def _list_greedy(self, id):
+    def _list_greedy(self, id, log=False):
         # TODO: consider preach, instead of padj
         candidates = [(u,v) for (u,v) in self.free_edges
                                 if ((u in self.padj[id]) or
                                     (v in self.padj[id]) or
                                     (u in self.mines) or (v in self.mines))]
+        if log:
+            pprint(candidates)
         if len(candidates) == 0:
-            rnd = list(free_edges); shuffle(rnd)
+            rnd = list(self.free_edges); shuffle(rnd)
             candidates = rnd[0:50]
 
         score_by_mine = {}
@@ -30,7 +32,7 @@ class VladSolver4:
             score_by_mine[m] = sum([self.dist[m][u]**2 for (u,_) in res.items()])
 
         ordered_edges = []
-        for (u,v) in candidates:
+        for u,v in candidates:
             score = 0
             for m in self.mines:
                 score += score_by_mine[m]
@@ -44,7 +46,7 @@ class VladSolver4:
                     score += 0
                 else:
                     res = self._bfs(m, self.padj[id], xtra={u:v, v:u})
-                    newsc = sum([self.dist[m][u]**2 for (u,_) in res.items()])
+                    newsc = sum([self.dist[m][xxu]**2 for (xxu,_) in res.items()])
                     assert newsc >= score_by_mine[m]
                     score += newsc - score_by_mine[m]
             ordered_edges.append( (score, (u,v)) )
@@ -94,7 +96,7 @@ class VladSolver4:
                         mu,mv = u,v
                         break
             if mu < 0:
-                mu, mv = random.choice(list(free_edges))
+                mu, mv = choice(list(free_edges))
                 s = 0
 
             scores[id] += s
@@ -198,6 +200,8 @@ class VladSolver4:
                 self.free_edges.discard( (v,u) )
             self.num_moves_left -= 1
 
+        #pprint(self.free_edges)
+
         # mine reachability for each player
         self.preach = [{} for i in range(self.num)]
         for id in range(self.num):
@@ -207,7 +211,7 @@ class VladSolver4:
         # greedy-ordered moves for each non-self-player
         self.pgreedy = [[] for i in range(self.num)]
         for id in range(self.num):
-            self.pgreedy[id] = self._list_greedy(id)
+            self.pgreedy[id] = self._list_greedy(id, False)
 
         # TODO: Filtering not necessarily desirable
         candidates = self.pgreedy[self.id]
