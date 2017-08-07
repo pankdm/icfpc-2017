@@ -1,0 +1,1 @@
+"{\"map\": \"maps/lambda.json\", \"ts\": 1502014805, \"results\": [{\"score\": 623, \"punter\": \"Vlad-MCTS-15\", \"rank\": 1}, {\"score\": 285, \"punter\": \"FastGreedyPunter\", \"rank\": 2}, {\"score\": 255, \"punter\": \"Vlad-MCTS-15m\", \"rank\": 3}, {\"score\": 5, \"punter\": \"ChaosSolver\", \"rank\": 4}], \"map_settings\": {\"n\": 4}, \"settings\": {\"futures\": true}}"

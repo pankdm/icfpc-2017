@@ -1,0 +1,1 @@
+"{\"map\": \"maps/Sierpinski-triangle.json\", \"settings\": {\"futures\": true}, \"arena_version\": 5, \"ts\": 1502051406, \"results\": [{\"score\": 1354, \"punter\": \"Vlad-MCTS-2g\", \"rank\": 1}, {\"score\": 756, \"punter\": \"FastGreedyPunter\", \"rank\": 2}, {\"score\": 115, \"punter\": \"ChaosSolver\", \"rank\": 3}], \"map_settings\": {\"n\": 3}}"

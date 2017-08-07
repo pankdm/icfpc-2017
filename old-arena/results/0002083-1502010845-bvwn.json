@@ -1,0 +1,1 @@
+"{\"map\": \"maps/circle.json\", \"ts\": 1502010845, \"results\": [{\"score\": 295, \"punter\": \"Vlad-MCTS-15m\", \"rank\": 1}, {\"score\": 285, \"punter\": \"Vlad-MCTS-15\", \"rank\": 2}, {\"score\": 241, \"punter\": \"FastGreedyPunter\", \"rank\": 3}, {\"score\": 17, \"punter\": \"ChaosSolver\", \"rank\": 4}], \"map_settings\": {\"n\": 4}, \"settings\": {\"futures\": true}}"

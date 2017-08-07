@@ -1,0 +1,1 @@
+"{\"map\": \"maps/sample.json\", \"settings\": {\"futures\": true}, \"arena_version\": 7, \"ts\": 1502059479, \"results\": [{\"score\": 30, \"punter\": \"FastGreedyPunter\", \"rank\": 1}, {\"score\": 30, \"punter\": \"FastGreedyStochasticPunter\", \"rank\": 2}], \"map_settings\": {\"n\": 2}}"
