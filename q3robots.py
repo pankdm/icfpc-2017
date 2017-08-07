@@ -28,4 +28,4 @@ def create_all_robots():
 
 
 # please increment when you add new robots
-ARENA_VERSION = 19
+ARENA_VERSION = 20
