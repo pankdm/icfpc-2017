@@ -8,7 +8,7 @@ class MetaPunter(offline_punter.OfflinePunter):
         self.name = "greedy monkey" if not config.name else config.name
         self.config = config
         self.fast = create_punter(fast_greedy_options.FastGreedyOptions, log=False, name=self.name, use_options=True)
-        self.vlad = create_punter(vlad_solver2.VladSolver2, log=False, name=self.name)
+        self.vlad = create_punter(vlad_solver2.VladSolver2, log=False, name=self.name, timeout=0.6)
         self.size = 0
 
     def get_handshake(self):
