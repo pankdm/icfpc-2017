@@ -97,6 +97,23 @@ def compute_bridge_scores(world, all_distances):
     return result
 
 
+def compute_vertices_centralness(world, all_distances):
+    max_distance_sum = 0
+    sum_distances = {}
+    for u in world.vertices:
+        distance_sum = 0
+        for v in world.vertices:
+            if u != v:
+                if v in all_distances[u]:
+                    distance_sum += all_distances[u][v]
+                else:
+                    distance_sum += 3*world.n
+        sum_distances[u] = distance_sum
+        max_distance_sum = max(max_distance_sum, distance_sum)
+    for u, distance_sum in sum_distances.iteritems():
+       sum_distances[u] = (float(max_distance_sum) - float(distance_sum))/float(max_distance_sum)
+    return sum_distances
+
 def floyd_warshall(graph):
     n = 0
     for s, ts in graph.iteritems():

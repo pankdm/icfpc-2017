@@ -1,7 +1,7 @@
 import random
 
 class ComponentsListWithScores:
-    def __init__(self, n, mines, distances, bridge_scores = {}):
+    def __init__(self, n, mines, distances, bridge_scores = {}, vertex_scores = {}):
         self.lists_ = []
         self.vertices_ = []
         for i in range(n):
@@ -12,19 +12,26 @@ class ComponentsListWithScores:
         self.mines_ = mines
         self.distances_ = distances
         self.bridge_scores_ = bridge_scores
+        self.vertex_scores_ = vertex_scores
         self.edges_ = set()
         self.bridge_score_ = 0
+        self.vertex_score_ = 0
+        self.added_vertices_ = set()
         
         self.transactions_ = []
         self.transctions_scores_ = []
         self.transctions_edges_ = []
         self.transactions_bridge_scores_ = []
+        self.transactions_vertex_scores_ = []
+        self.transactions_vertices_ = []
 
     def union(self, i, j):
         if i > j:
             i, j = j, i
         self.edges_.remove( (i, j) )
         self.transctions_edges_[-1].append( (i, j) )
+        self.add_vertex(i)
+        self.add_vertex(j)
 
         if (i, j) in self.bridge_scores_:
             self.bridge_score_ += self.bridge_scores_[(i, j)]
@@ -50,6 +57,13 @@ class ComponentsListWithScores:
         self.lists_[component].add(v)
         self.vertices_[v] = component
 
+    def add_vertex(self, v):
+        if not v in self.added_vertices_:
+            self.added_vertices_.add(v)
+            self.transactions_vertices_[-1].append( ('-', v) )
+            if v in self.vertex_scores_:
+                self.vertex_score_ += self.vertex_scores_[v]
+
     def remove(self, component, v):
         self.transactions_[-1].append( ('+', v, component) )
         self.lists_[component].remove(v)
@@ -59,6 +73,8 @@ class ComponentsListWithScores:
         self.transctions_scores_.append(self.score_)
         self.transctions_edges_.append([])
         self.transactions_bridge_scores_.append(self.bridge_score_)
+        self.transactions_vertex_scores_.append(self.vertex_score_)
+        self.transactions_vertices_.append([])
 
     def rollback_transaction(self):
         for e in self.transctions_edges_[-1]:
@@ -79,6 +95,17 @@ class ComponentsListWithScores:
         self.bridge_score_ = self.transactions_bridge_scores_[-1]
         self.transactions_bridge_scores_.pop()
 
+        self.vertex_score_ = self.transactions_vertex_scores_[-1]
+        self.transactions_vertex_scores_.pop()
+
+        for t in self.transactions_vertices_[-1]:
+            if t[0] == '+':
+                self.added_vertices_.add(t[1])
+            else:
+                self.added_vertices_.remove(t[1])
+        self.transactions_vertices_.pop()
+
+
     def component(self, v):
         return self.vertices_[v]
 
@@ -90,6 +117,9 @@ class ComponentsListWithScores:
 
     def bridge_score(self):
         return self.bridge_score_
+
+    def vertex_score(self):
+        return self.vertex_score_
 
     def add_edge(self, s, t):
         if s > t:
