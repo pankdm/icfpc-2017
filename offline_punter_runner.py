@@ -6,14 +6,25 @@ from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedy
 
 from config import create_punter, Config
 
+log = True
+
+if log:
+    fLog = open("log", "w")
+
+def read(k):
+    res = sys.stdin.read(k)
+    if log:
+        print >>fLog, "read: %d %s" % (k, str(res))
+    return res
+
 def readInputJson():
     sLen = ""
-    ch = sys.stdin.read(1)
+    ch = read(1)
     while ch != ':':
         sLen += ch
-        ch = sys.stdin.read(1)
+        ch = read(1)
     ln = int(sLen)
-    mgs = sys.stdin.read(ln)
+    mgs = read(ln)
     return json.load(msg)
 
 def writeOutputJson(obj):
