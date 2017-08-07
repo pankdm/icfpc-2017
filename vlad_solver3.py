@@ -66,7 +66,7 @@ class VladSolver3:
         score = 0
         for m in self.mines:
             res = self._bfs(m, adj, xtra)
-            score += sum([self.dist[m][d]**2 for (_,d) in res.items()])
+            score += sum([self.dist[m][u]**2 for (u,_) in res.items()])
         return score
 
 
