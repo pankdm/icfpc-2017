@@ -14,3 +14,4 @@ class Config:
 
         self.use_splurges = False
         self.use_options = False
+        self.splurges_on_claim = False
