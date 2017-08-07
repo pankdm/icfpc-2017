@@ -17,8 +17,10 @@ def random_string(N):
     return ''.join(random.choice(string.ascii_lowercase) for _ in range(N))
 
 SETTINGS = [
-    # {},
-    {"futures": True},
+    {"futures": True,
+     "splurges": True,
+     "options": True,
+     },
 ]
 
 def select_punters(size):

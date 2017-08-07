@@ -146,7 +146,8 @@ class FastGreedyPunter:
                 self.components.rollback_transaction()
 
         if self.config.log and best_score:
-            print('Found {} that would give score {}'.format(best_st, best_score - current_score))
+            print('Found {} that would give score {}, new score = {}'.format(
+                best_st, best_score - current_score, best_score))
 
         if best_score is None:
             # choose random if nothing found
@@ -195,7 +196,7 @@ class FastGreedyPunter:
                     self.components.start_transaction()
                     self.components.union(s, t)
 
-                    if mode == "splurge": self.my_credit -= 1
+                    # if mode == "splurge": self.my_credit -= 1
 
             for move in data["move"]["moves"]:
                 if "pass" in move:
@@ -245,6 +246,15 @@ class FastGreedyPunter:
             end = timer()
             if self.config.log:
                 print('Finished select_greedy_edge in {}s'.format(end - start))
+
+        if self.config.splurges_on_claim and self.settings.get("splurges"):
+            # splurges of length 1 equivalent to regular moves
+            return {
+                "splurge": {
+                    "punter": self.punter_id,
+                    "route": [s, t],
+                },
+            }
 
         return {
             "claim": {
