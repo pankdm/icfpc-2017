@@ -11,6 +11,7 @@ def create_all_robots():
         create_punter(VladSolver3, name="Vlad-MG-3b", timeout=0.8),
         create_punter(VladSolver4, name="Vlad-MG-4b", timeout=0.8),
         create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, name="FastGreedyStochasticBridgesVerticesMaxPunter"),
+        create_punter(FastGreedyBridgesVerticesMaxPunter, name="FastGreedyBridgesVerticesMaxPunter"),
         # create_punter(UberFastGreedyStochasticPunter, name="UberFastGreedyStochasticPunter"),
     ]
 
