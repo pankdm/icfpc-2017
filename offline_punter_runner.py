@@ -30,6 +30,8 @@ def readInputJson():
 def writeOutputJson(obj):
     jsonOut = json.dumps(obj)
     res = str(len(jsonOut)) + ":" + jsonOut
+    if log:
+        print >>fLog, "write: %s" % res
     sys.stdout.write(res)
     sys.stdout.flush()
 
