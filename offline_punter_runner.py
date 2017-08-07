@@ -24,7 +24,7 @@ def readInputJson():
         sLen += ch
         ch = read(1)
     ln = int(sLen)
-    mgs = read(ln)
+    msg = read(ln)
     return json.load(msg)
 
 def writeOutputJson(obj):
