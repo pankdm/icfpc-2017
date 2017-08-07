@@ -177,7 +177,7 @@ class Server:
                 print ('WARNING: player {} trying to claim road: {} already taken by {}'.format(
                     name,
                     move,
-                    self.claimed_roads[st]))
+                    self.names[self.claimed_roads[st]]))
                 return PASS_MOVE
             else:
                 if not t in self.world.graph[s]:
