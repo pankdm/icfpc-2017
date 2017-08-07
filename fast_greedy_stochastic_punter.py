@@ -54,16 +54,14 @@ class FastGreedyStochasticPunter:
 
         map_data = data["map"]
         self.world = graph_util.World(map_data)
-        self.graph = self.world.graph
-        self.mines = self.world.mines
 
         self.distances = graph_util.compute_distances(self.world)
-        self.all_distances = graph_util.compute_all_distances(self.world)
+        all_distances = graph_util.compute_all_distances(self.world)
         t0 = time.clock()
-        self.bridge_scores = graph_util.compute_bridge_scores(self.world, self.all_distances)
-        self.vertex_scores = graph_util.compute_vertices_centralness(self.world, self.all_distances)
+        bridge_scores = graph_util.compute_bridge_scores(self.world, all_distances)
+        vertex_scores = graph_util.compute_vertices_centralness(self.world, all_distances)
         for m in self.world.mines:
-            self.vertex_scores[m] += 0.25
+            vertex_scores[m] += 1.0
 
         if self.config.log:
             print("vertex_scores", self.vertex_scores)
@@ -76,10 +74,10 @@ class FastGreedyStochasticPunter:
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.vertices, self.mines, self.distances, self.bridge_scores, self.vertex_scores)
+        self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, self.distances, bridge_scores, vertex_scores)
         self.components.start_transaction()
         for v in self.world.vertices:
-            for x in self.graph[v]:
+            for x in self.world.graph[v]:
                 self.components.add_edge(v, x)
 
         # default reply
@@ -123,7 +121,7 @@ class FastGreedyStochasticPunter:
 
     def _select_random_edge(self, graph):
         all_edges = []
-        for s, nodes in self.graph.items():
+        for s, nodes in self.world.graph.items():
             for t in nodes:
                 all_edges.append( (s, t) )
         index = random.randint(0, len(all_edges) - 1)
@@ -139,7 +137,7 @@ class FastGreedyStochasticPunter:
 
     def _select_greedy_edge(self):
         all_edges = []
-        for s, nodes in self.graph.items():
+        for s, nodes in self.world.graph.items():
             for t in nodes:
                 all_edges.append( (s, t) )
         random.shuffle(all_edges)
@@ -246,7 +244,7 @@ class FastGreedyStochasticPunter:
                     s = move["claim"]["source"]
                     t = move["claim"]["target"]
                     st = (s, t)
-                    remove_edge(self.graph, st)
+                    remove_edge(self.world.graph, st)
 
                     punter_id = move["claim"]["punter"]
                     if punter_id == self.punter_id:
@@ -256,7 +254,7 @@ class FastGreedyStochasticPunter:
 
         # take one at random
         if False and self.num_moves == 1:
-            s, t = self._select_random_edge(self.graph)
+            s, t = self._select_random_edge(self.world.graph)
             if self.config.log:
                 print('Move: {}, got random move {}'.format(self.num_moves, (s, t)))
         else:
