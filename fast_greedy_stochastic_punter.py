@@ -302,7 +302,7 @@ class FastGreedyStochasticBridgesMaxPunter(FastGreedyStochasticMaxPunter):
     def weight_stochastic(self):
         if self.num_moves < 3.0*math.sqrt(self.world.n):
             return 0.0
-        return 0.3
+        return 1.0
 
 
 
@@ -318,7 +318,7 @@ class FastGreedyStochasticBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMa
     def weight_stochastic(self):
         if self.num_moves < 3.0*math.sqrt(self.world.n):
             return 0.0
-        return 0.3
+        return 1.0
 
 
 if __name__ == "__main__":
