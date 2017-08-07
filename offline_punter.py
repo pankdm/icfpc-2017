@@ -20,7 +20,9 @@ class OfflinePunter:
 
     def run(self, input_json):
         if "state" in input_json:
-            self.set_state_from_written(input_json["state"])
+            state = input_json["state"]
+            if 0 != len(state):
+                self.set_state_from_written(state)
         if "punter" in input_json:
             res = self.process_setup(input_json)
         else:
