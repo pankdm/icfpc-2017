@@ -178,6 +178,13 @@ class Server:
                     self.claimed_roads[st]))
                 return PASS_MOVE
             else:
+                name = self.names[punter_id]
+                if not t in self.world.graph[s]:
+                    print ("ERROR player {} is claiming non-existing edge {}".format(
+                        name,
+                        (s, t)))
+                    return PASS_MOVE
+
                 self.claimed_roads[st] = punter_id
                 add_edge(self.per_punter_graph[punter_id], st)
                 return move
@@ -231,6 +238,8 @@ class Server:
     def run(self):
         n = len(self.punters)
         punter_id2name = {}
+        self.names = {}
+
         for p_index, p in enumerate(self.punters):
             data = {
                 "punter": p_index,
@@ -240,6 +249,7 @@ class Server:
             }
             p_name = p.get_handshake()["me"]
             punter_id2name[p_index] = p_name
+            self.names[p_index] = p_name
             self.players.append({
                 "id": p_index,
                 "name": p_name,
