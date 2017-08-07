@@ -65,7 +65,7 @@ def compute_distances(world):
             distances[city][mine] = score
     return distances
 
-c_timeout = 5
+c_timeout = 4.5
 
 # compute the scores to each city
 # map : city -> city -> score
