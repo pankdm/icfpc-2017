@@ -26,10 +26,11 @@ class OfflinePunter:
             state = input_json["state"]
             if 0 != len(state):
                 self.set_state_from_written(state)
-        if "punter" in input_json:
-            res = self.process_setup(input_json)
-        else:
-            res = self.process_move(input_json)
+        if not "timeout" in input_json:
+            if "punter" in input_json:
+                res = self.process_setup(input_json)
+            else:
+                res = self.process_move(input_json)
         if not "stop" in input_json:
             res["state"] = self.get_state_for_write()
         return res
