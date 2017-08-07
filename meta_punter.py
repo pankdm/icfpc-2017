@@ -23,15 +23,6 @@ class MetaPunter(offline_punter.OfflinePunter):
         self.size = state_tuple[0]
         self.get_punter().set_state(state_tuple[1:])
 
-    def run(self, input_json):
-        if "punter" in input_json:
-            vertices = set()
-            for river in input_json["map"]["rivers"]:
-                vertices.add(river["source"])
-                vertices.add(river["target"])
-            self.size = len(vertices)
-        return self.get_punter().run(input_json)
-
     def get_punter(self):
         if self.size < 97:
             return self.vlad
@@ -39,6 +30,12 @@ class MetaPunter(offline_punter.OfflinePunter):
             return self.fast
     
     def process_setup(self, data):
+        if "punter" in data:
+            vertices = set()
+            for river in data["map"]["rivers"]:
+                vertices.add(river["source"])
+                vertices.add(river["target"])
+            self.size = len(vertices)
         return self.get_punter().process_setup(data)
     
     def process_move(self, data):

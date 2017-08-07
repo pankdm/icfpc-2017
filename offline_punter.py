@@ -18,6 +18,9 @@ class OfflinePunter:
         state = cPickle.loads(pickled_state)
         self.set_state(state)
 
+    def extra_setup(self):
+        pass
+
     def run(self, input_json):
         if "state" in input_json:
             state = input_json["state"]
