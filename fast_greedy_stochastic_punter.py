@@ -164,7 +164,6 @@ class FastGreedyStochasticPunter:
         best_bridge_gain = 0
         best_vertex_gain = 0
         best_stochastic_gain = 0
-        n_iterations = 0
         for st in all_edges:
             if time.clock() > begin0 + 0.95:
                 break
@@ -176,6 +175,7 @@ class FastGreedyStochasticPunter:
 
                 score_before_random = self.components.score()
                 score_random_gains = []
+                n_iterations = 0
                 stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
                 begin = time.clock()
                 c_move_time_limit = 0.7
