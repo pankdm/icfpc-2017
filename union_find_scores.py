@@ -1,7 +1,7 @@
 import random
 
 class ComponentsListWithScores:
-    def __init__(self, n, mines, distances, bridge_scores = {}, vertex_scores = {}):
+    def __init__(self, n, mines = {}, distances = {}, bridge_scores = {}, vertex_scores = {}):
         self.lists_ = []
         self.vertices_ = []
         for i in range(n):
@@ -26,17 +26,17 @@ class ComponentsListWithScores:
         self.transactions_vertices_ = []
 
     def union(self, i, j):
+        assert i != j
         if i > j:
             i, j = j, i
-        self.edges_.remove( (i, j) )
-        self.transctions_edges_[-1].append( (i, j) )
+        p = (i, j)
+        self.edges_.remove(p)
+        self.transctions_edges_[-1].append(p)
         self.add_vertex(i)
         self.add_vertex(j)
 
         if (i, j) in self.bridge_scores_:
             self.bridge_score_ += self.bridge_scores_[(i, j)]
-        elif (j, i) in self.bridge_scores_:
-            self.bridge_score_ += self.bridge_scores_[(j, i)]
 
         i = self.component(i)
         j = self.component(j)
@@ -48,9 +48,8 @@ class ComponentsListWithScores:
             if x in self.mines_:
                 for y in self.lists_[i]:
                     self.score_ += self.distances_.get(y, {}).get(x, 0)**2
-        for x in self.lists_[j]:
-            self.add(i, x)
         for x in list(self.lists_[j]):
+            self.add(i, x)
             self.remove(j, x)
 
     def add(self, component, v):
@@ -124,6 +123,7 @@ class ComponentsListWithScores:
         return self.vertex_score_
 
     def add_edge(self, s, t):
+        assert s != t
         if s > t:
             s, t = t, s
         self.edges_.add( (s, t) )
@@ -148,7 +148,10 @@ class ComponentsListWithScores:
         return result
 
 if __name__ == "__main__":
-    cl = ComponentsList(5)
+    cl = ComponentsListWithScores(5)
+    cl.add_edge(1, 2)
+    cl.add_edge(3, 4)
+    cl.add_edge(1, 3)
     cl.start_transaction()
     cl.union(1, 2)
     print('1', cl.components()[1])
