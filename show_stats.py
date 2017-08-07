@@ -63,6 +63,8 @@ def run():
             bs.rank_score += n - r["rank"] + 1
             bs.game_score += r["score"]
 
+    penalty = defaultdict(int)
+    nMaps = defaultdict(int)
 
     for m, s in ORIGINAL_MAPS:
         print ''
@@ -73,6 +75,7 @@ def run():
             ll = dd.items()
             ll.sort(key=lambda x : x[1].get_avg_rank_score(), reverse=True)
 
+            iPlayer = 0
             for player, bs in ll:
                 if player == "chaos monkey": continue
                 print '>>   {} --> {:.3f} avg rank score, {:.2f} score ({} games)'.format(
@@ -80,6 +83,17 @@ def run():
                     bs.get_avg_rank_score(),
                     bs.get_avg_game_score(),
                     bs.num_games)
+                penalty[player] += iPlayer
+                iPlayer += 1
+                nMaps[player] += 1
+
+    ll = list(penalty.iteritems())
+    ll.sort(key=lambda x : x[1])
+    print("OVERALL")
+    for player, penalty in ll:
+        if nMaps[player] == len(ORIGINAL_MAPS):
+            print("{} --> {}".format(player, penalty))
+
 
 if __name__ == "__main__":
     run()
