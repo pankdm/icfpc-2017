@@ -18,7 +18,7 @@ from config import *
 def create_all_robots():
     return [
         create_punter(ChaosPunter, name="ChaosSolver"),
-        create_punter(VladSolver2, name="Vlad-MCTS-2j"),
+        create_punter(VladSolver2, name="Vlad-MCTS-2j", timeout=0.8),
         create_punter(FastGreedyPunter, name="FastGreedyPunter"),
         create_punter(FastGreedyPunter, name="FastSplurges", splurges_on_claim=True),
         create_punter(FastGreedyOptions, name="Fast Options", use_options=True),
