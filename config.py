@@ -11,3 +11,5 @@ class Config:
         self.log = False
         self.name = ""
         self.futures = False
+
+        self.use_splurges = False

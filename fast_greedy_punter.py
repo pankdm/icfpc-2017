@@ -79,8 +79,13 @@ class FastGreedyPunter:
         # maintain graph of our nodes
         self.my_graph = defaultdict(set)
 
+        # credit of moves
+        self.my_credit = 0
+
         # default reply
         reply = {"ready": self.punter_id}
+
+        self.settings = data.get("settings", {})
 
         # futures = data.get("settings", {}).get("futures", False)
         # if futures:
@@ -174,13 +179,25 @@ class FastGreedyPunter:
 
         return best_st
 
+    def _select_2_greedy_edges(self):
+        # take 1 greedy then the other just anything
+        s, t = self._select_greedy_edge()
+        route = [s, t]
+        for next in self.graph[t]:
+            if next != s:
+                route.append(next)
+                break
+        if self.config.log:
+            print 'Returning route: {}'.format(route)
+        return route
+
+
 
     def process_move(self, data):
         if self.config.log:
             print ''
             print("Processing move:")
             pprint(data)
-
 
         self.num_moves += 1
         # check if this is stop message:
@@ -189,19 +206,54 @@ class FastGreedyPunter:
 
         # update the available edges
         if "move" in data:
+            def process_edge(punter_id, s, t, mode):
+                st = (s,t)
+                remove_edge(self.graph, st)
+
+                if punter_id == self.punter_id:
+                    add_edge(self.my_graph, st)
+
+                    self.components.start_transaction()
+                    self.components.union(s, t)
+
+                    if mode == "splurge": self.my_credit -= 1
+
             for move in data["move"]["moves"]:
+                if "pass" in move:
+                    punter_id = move["pass"]["punter"]
+                    if punter_id == self.punter_id:
+                        self.my_credit += 1
+
                 if "claim" in move:
                     s = move["claim"]["source"]
                     t = move["claim"]["target"]
-                    st = (s,t)
-                    remove_edge(self.graph, st)
-
                     punter_id = move["claim"]["punter"]
-                    if punter_id == self.punter_id:
-                        add_edge(self.my_graph, st)
+                    process_edge(punter_id, s, t, "claim")
 
-                        self.components.start_transaction()
-                        self.components.union(s, t)
+                if "splurge" in move:
+                    splurges = move["splurge"]["route"]
+                    punter_id = move["splurge"]["punter"]
+                    for i in xrange(len(splurges) - 1):
+                        s = splurges[i]
+                        t = splurges[i + 1]
+                        process_edge(punter_id, s, t, "splurge")
+
+        if self.config.use_splurges and self.settings.get("splurges"):
+            # splurges mode
+            if self.my_credit > 0:
+                route = self._select_2_greedy_edges()
+                return {
+                    "splurge": {
+                        "punter": self.punter_id,
+                        "route": route,
+                    }
+                }
+            else:
+                return {
+                    "pass": {
+                        "punter": self.punter_id,
+                    }
+                }
 
         # take one at random
         if self.num_moves == 1:

@@ -22,8 +22,17 @@ class FinalScore:
         self.score = 0
 
 def update_punter_id(move, punter_id):
+    move.get("pass", {})["punter"] = punter_id
     move.get("claim", {})["punter"] = punter_id
+    move.get("splurges", {})["punter"] = punter_id
 
+
+def create_pass_move(punter_id):
+    return {
+        "pass": {
+            "punter": punter_id,
+        },
+    }
 
 def canonical(s, t):
     if s < t: return (s, t)
@@ -86,6 +95,14 @@ class Server:
         self.futures = {}
         self.futures_enabled = settings.get("futures", False)
 
+        # for splurges support
+        self.per_player_credit = {}
+        for i in range(len(self.punters)):
+            self.per_player_credit[i] = 0
+
+
+        self.splurges_enabled = settings.get("splurges", False)
+
         # data to dump that is useful for webserver visualization
         self.all_moves = []
         self.scores = []
@@ -93,15 +110,72 @@ class Server:
 
 
     def _apply_move(self, move, punter_id):
+        # print 'applying move {}'.format(move)
+
+        PASS_MOVE = create_pass_move(punter_id)
+        if "pass" in move:
+            # updating credit anyway
+            # it's just won't be used in non-splurges mode
+            self.per_player_credit[punter_id] += 1
+            return move
+
+        if "splurge" in move:
+            if not self.splurges_enabled:
+                print ('ERROR: trying to use splurges when not enabled: {}'.format(move))
+                return PASS_MOVE
+            splurges = move["splurge"]["route"]
+            num_edges = len(splurges) - 1
+            # invalid case: not enough credit to use them
+            if num_edges == 0 or (num_edges - 1) > self.per_player_credit[punter_id]:
+                print ('ERROR: not enough credit {} to claim {} edges'.format(
+                    self.per_player_credit[punter_id],
+                    num_edges
+                ))
+                return PASS_MOVE
+
+            # now check that the path is valid
+            ok = True
+            for i in xrange(len(splurges) - 1):
+                s = splurges[0]
+                t = splurges[i + 1]
+                st = canonical(s, t)
+                if st in self.claimed_roads:
+                    ok = False
+                    break
+            if not ok: return PASS_MOVE
+
+            self.per_player_credit[punter_id] -= (num_edges - 1)
+            assert self.per_player_credit[punter_id] >= 0
+
+            # now apply it
+            for i in xrange(num_edges):
+                assert i + 1 < len(splurges)
+                s = splurges[i]
+                t = splurges[i + 1]
+                st = canonical(s, t)
+
+                self.claimed_roads[st] = punter_id
+                add_edge(self.per_punter_graph[punter_id], st)
+                # self.per_player_credit[punter_id] -= 1
+            return move
+
         if "claim" not in move:
-            return
+            # probably should never happen
+            print ('ERROR: Unknown move {}'.format(move))
+            return move
 
         s = move["claim"]["source"]
         t = move["claim"]["target"]
         st = canonical(s, t)
-        if st not in self.claimed_roads:
+        if st in self.claimed_roads:
+            print ('WARNING: trying to claim road: {} already taken by {}'.format(
+                move,
+                self.claimed_roads[st]))
+            return PASS_MOVE
+        else:
             self.claimed_roads[st] = punter_id
             add_edge(self.per_punter_graph[punter_id], st)
+            return move
 
 
     def _compute_scores(self):
@@ -160,9 +234,11 @@ class Server:
                 next_move = p.process_move(data)
                 update_punter_id(next_move, p_index)
 
+                # apply move returns new
+                next_move = self._apply_move(next_move, p_index)
+
                 self.previous_moves[p_index] = next_move
                 self.all_moves.append(next_move)
-                self._apply_move(next_move, p_index)
 
                 num_moves += 1
                 if num_moves >= self.total_moves:
