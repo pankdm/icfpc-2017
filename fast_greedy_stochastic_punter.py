@@ -3,6 +3,7 @@ from copy import deepcopy
 import random
 import time
 import math
+import cPickle
 
 from pprint import pprint
 from timeit import default_timer as timer
@@ -11,14 +12,21 @@ from graph_util import *
 from union_find_scores import *
 from client import *
 import graph_util
-import cPickle
+import offline_punter
 
-class FastGreedyStochasticPunter:
+class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
     def __init__(self, config):
         self.name = "fast greedy stochastic monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
 
+    def get_state(self):
+        return (self.world, self.components)
+
+    def set_state(self, state):
+        self.world = state[0]
+        self.components = state[1]
+    
     def save(self):
         begin = time.clock()
         sData = cPickle.dumps( (self.components, self.world) )
