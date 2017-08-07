@@ -50,7 +50,8 @@ def run_battle(stats, it):
         #create_punter(FastGreedyStochasticPunter, name="FastStoch"),
 
         create_punter(FastGreedyPunter, name="FastGreedy"),
-        create_punter(VladSolver4, name="VladMetaGreedy4", timeout=0.9, log=True),
+        #create_punter(VladSolver4, name="VladMetaGreedy4", timeout=0.9, log=True),
+        create_punter(VladSolver2, name="Vlad-MCTS-2i", timeout=0.8, search_width=15, magic_moves=True, greedy_threshold=9999, playout_max_depth=50, log=True),
 
         #create_punter(VladSolver1, name="Vlad MCTS   ", timeout=0.45, log=True),
         #create_punter(VladSolver2, name="Vlad MCTS-2  ", timeout=0.45, search_width=15, magic_moves=True, greedy_threshold=50, log=True),
