@@ -59,6 +59,8 @@ if __name__ == "__main__":
                 if "stop" in inp:
                     if "scores" in inp["stop"]:
                         print >>fLog, "me: %d" % punter.punter_id, inp["stop"]["scores"]
+        if log:
+            fLog.flush()
     except Exception as ex:
         if log:
             print >>fLog, "Exception:", str(ex)
