@@ -168,7 +168,7 @@ class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
         best_vertex_gain = 0
         best_stochastic_gain = 0
         for st in all_edges:
-            if time.clock() > begin0 + 0.95:
+            if time.clock() > begin0 + 0.7:
                 break
             n_processed += 1
             s, t = st
@@ -181,7 +181,7 @@ class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
                 n_iterations = 0
                 n_stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
                 begin = time.clock()
-                c_move_time_limit = 0.7
+                c_move_time_limit = 0.5
                 score_gain = self.components.score() - current_score
                 bridge_score_gain = self.components.bridge_score() - current_bridge_score
                 vertex_score_gain = self.components.vertex_score() - current_vertex_score
