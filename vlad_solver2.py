@@ -293,6 +293,14 @@ class VladSolver2:
                 self.padj[id][v].append(u)
                 self.free_edges.discard( (u,v) )
                 self.free_edges.discard( (v,u) )
+            if 'splurge' in mv:
+                id = mv['splurge']['punter']
+                for i in range(1, len(mv['splurge']['route'])):
+                    (u,v) = (mv['splurge']['route'][i-1], mv['splurge']['route'][i])
+                    self.padj[id][u].append(v)
+                    self.padj[id][v].append(u)
+                    self.free_edges.discard( (u,v) )
+                    self.free_edges.discard( (v,u) )
             self.num_moves_left -= 1
 
         has_move = False
