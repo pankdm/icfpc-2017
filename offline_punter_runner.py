@@ -5,7 +5,7 @@ import os
 import time
 
 # from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedyStochasticMaxPunter, FastGreedyStochasticBridgesMaxPunter, FastGreedyStochasticBridgesVerticesMaxPunter
-# from fast_greedy_options import FastGreedyOptions
+from fast_greedy_options import FastGreedyOptions
 from meta_punter import MetaPunter
 
 from config import create_punter, Config
@@ -57,6 +57,7 @@ def log_traceback(ex, ex_traceback=None):
 if __name__ == "__main__":
     try:
         begin = time.clock()
+        # punter = create_punter(FastGreedyOptions, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegressionOrDeepLearning", use_options=True)
         punter = create_punter(MetaPunter, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegressionOrDeepLearning")
         hs = punter.get_handshake()
         writeOutputJson(hs)
