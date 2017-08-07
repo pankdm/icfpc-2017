@@ -43,7 +43,7 @@ def run_battle(stats, it):
 
     punters = [
         # create_punter(ChaosPunter, log=False, name="Chaos 1"),
-        create_punter(GreedyPunter2, log=False, name="Greedy2 1"),
+        # create_punter(GreedyPunter2, log=False, name="Greedy2 1"),
         # create_punter(ChaosPunter, log=False, name="Chaos 2"),
         # create_punter(ChaosPunter, log=False, name="Chaos 3"),
         # create_punter(ChaosPunter, log=False, name="Chaos 4"),
@@ -51,12 +51,18 @@ def run_battle(stats, it):
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 2"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 3"),
         # create_punter(GreedyPunter, log=False, name="GreedyPunter 4"),
-        create_punter(FastGreedyPunter, log=False, name="Fast 1"),
+
+        create_punter(FastGreedyOptions, name="Options 1", use_options=True),
+        create_punter(FastGreedyPunter, name="baseline")
         # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 2"),
         # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 3"),
     ]
+    # random.shuffle(punters)
+
     settings = {
-        "futures": True
+        "futures": True,
+        "splurges": True,
+        "options": True,
     }
 
     # rotate punters to have more consistent results

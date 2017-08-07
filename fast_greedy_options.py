@@ -35,7 +35,7 @@ class FastGreedyOptions(offline_punter.OfflinePunter):
         self.my_graph = state[8]
         self.my_options = state[9]
         self.available_for_option = state[10]
-    
+
     def process_setup(self, data):
         if self.config.log:
             print("Processing setup:")
@@ -50,7 +50,7 @@ class FastGreedyOptions(offline_punter.OfflinePunter):
 
         if self.config.log:
             print('Calculated distances')
-            for city, scores in sorted(self.distances.items()):
+            for city, scores in sorted(distances.items()):
                 print('{} -> {}'.format(city, scores))
 
         self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, distances)
@@ -155,7 +155,8 @@ class FastGreedyOptions(offline_punter.OfflinePunter):
                     self.components.rollback_transaction()
 
         if self.config.log and best_score:
-            print('Found {} that would give score {}'.format(best_st, best_score - current_score))
+            print('Found {} that would give score {}, new_score = {}'.format(
+                best_st, best_score - current_score, best_score))
 
         if best_score is None:
             # choose random if nothing found

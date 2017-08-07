@@ -32,7 +32,7 @@ class FastGreedyPunter:
         self.num_moves = state[5]
         self.my_credit = state[6]
         self.settings = state[7]
-    
+
     def process_setup(self, data):
         if self.config.log:
             print("Processing setup:")
