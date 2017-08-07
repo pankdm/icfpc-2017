@@ -21,11 +21,15 @@ class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
         self.config = config
 
     def get_state(self):
-        return (self.world, self.components)
+        return (self.world, self.components, self.punter_id, self.num_punters, self.config, self.num_moves)
 
     def set_state(self, state):
         self.world = state[0]
         self.components = state[1]
+        self.punter_id = state[2]
+        self.num_punters = state[3]
+        self.config = state[4]
+        self.num_moves = state[5]
     
     def save(self):
         begin = time.clock()
@@ -63,7 +67,7 @@ class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
         map_data = data["map"]
         self.world = graph_util.World(map_data)
 
-        self.distances = graph_util.compute_distances(self.world)
+        distances = graph_util.compute_distances(self.world)
         all_distances = graph_util.compute_all_distances(self.world)
         t0 = time.clock()
         bridge_scores = graph_util.compute_bridge_scores(self.world, all_distances)
@@ -79,10 +83,10 @@ class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
 
         if self.config.log:
             print('Calculated distances')
-            for city, scores in sorted(self.distances.items()):
+            for city, scores in sorted(distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, self.distances, bridge_scores, vertex_scores)
+        self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, distances, bridge_scores, vertex_scores)
         self.components.start_transaction()
         for v in self.world.vertices:
             for x in self.world.graph[v]:
