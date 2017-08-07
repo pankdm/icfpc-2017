@@ -10,12 +10,12 @@ class OfflinePunter:
 
     def get_state_for_write(self):
         state = self.get_state()
-        pickled_state = cPickle.pickle(state)
+        pickled_state = cPickle.dumps(state)
         return base64.b64encode(pickled_state)
 
     def set_state_from_written(self, encoded_state):
         pickled_state = base64.b64decode(encoded_state)
-        state = cPickle.unpickle(pickled_state)
+        state = cPickle.loads(pickled_state)
         self.set_state(state)
 
     def run(self, input_json):
