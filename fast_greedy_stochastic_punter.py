@@ -323,6 +323,11 @@ class FastGreedyStochasticBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMa
         return 1.0
 
 
+class FastGreedyStochasticVerticesMaxPunter(FastGreedyStochasticBridgesVerticesMaxPunter):
+    def weight_bridges(self):
+        return 0.0
+
+
 class FastGreedyBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMaxPunter):
     def weight_stochastic(self):
         return 0.0
