@@ -274,7 +274,7 @@ class FastGreedyStochasticPunter:
             s, t =  self._select_greedy_edge()
             end = timer()
             if self.config.log:
-                print ('Finished select_greedy_edge in {}s'.format(end - start))
+                print('Finished select_greedy_edge in {}s'.format(end - start))
 
         return {
             "claim": {
