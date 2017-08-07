@@ -12,6 +12,8 @@ MAPS = [
     m("circle.json", n=4),
     m("Sierpinski-triangle.json", n=3),
 
+    m("Sierpinski-triangle3.json", n=3), # disjoint map
+
     m("tube.json", n=8),
     m("randomMedium.json", n=8),
     m("randomSparse.json", n=8),
