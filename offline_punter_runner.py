@@ -25,7 +25,7 @@ def readInputJson():
         ch = read(1)
     ln = int(sLen)
     msg = read(ln)
-    return json.load(msg)
+    return json.loads(msg)
 
 def writeOutputJson(obj):
     jsonOut = json.dumps(obj)
