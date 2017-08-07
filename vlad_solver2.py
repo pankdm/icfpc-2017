@@ -14,6 +14,50 @@ class Node:
 
 
 class VladSolver2:
+    def get_state(self):
+        state = []
+        state.append(self.name)
+        state.append(self.timeout)
+        state.append(self.log)
+        state.append(self.sum_norm)
+        state.append(self.playout_max_depth)
+        state.append(self.search_width)
+        state.append(self.magic_moves)
+        state.append(self.greedy_threshold)
+        state.append(self.id)
+        state.append(self.num)
+        state.append(self.adj)
+        state.append(self.mines)
+        state.append(self.dist)
+        state.append(self.sum_dist_sc)
+        state.append(self.sum_mine_sc)
+        state.append(self.tr)
+        state.append(self.free_edges)
+        state.append(self.padj)
+        state.append(self.num_moves_left)
+        return tuple(state)
+
+    def set_state(self, state):
+        self.name = state[0]
+        self.timeout = state[1]
+        self.log = state[2]
+        self.sum_norm = state[3]
+        self.playout_max_depth = state[4]
+        self.search_width = state[5]
+        self.magic_moves = state[6]
+        self.greedy_threshold = state[7]
+        self.id = state[8]
+        self.num = state[9]
+        self.adj = state[10]
+        self.mines = state[11]
+        self.dist = state[12]
+        self.sum_dist_sc = state[13]
+        self.sum_mine_sc = state[14]
+        self.tr = state[15]
+        self.free_edges = state[16]
+        self.padj = state[17]
+        self.num_moves_left = state[18]
+
     def __init__(self, config):
         self.name = config.name
         self.timeout = getattr(config, 'timeout', 0.95)
@@ -227,15 +271,6 @@ class VladSolver2:
 
         self.padj = {i: defaultdict(list) for i in range(self.num)}
         self.num_moves_left = len(data['map']['rivers'])
-
-        #pprint(self.id)
-        #pprint(self.num)
-        #pprint(self.adj)
-        #pprint(self.mines)
-        #pprint(self.dist)
-        #pprint(self.free_edges)
-        #pprint(self.padj)
-        #pprint(self.num_moves_left)
 
         return {'ready': self.id}
 
