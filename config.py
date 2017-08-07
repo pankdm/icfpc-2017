@@ -13,3 +13,4 @@ class Config:
         self.futures = False
 
         self.use_splurges = False
+        self.use_options = False

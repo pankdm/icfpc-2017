@@ -9,8 +9,8 @@ def create_all_robots():
         create_punter(FastGreedyStochasticBridgesMaxPunter, name="FastGreedyStochasticBridgesMaxPunter"),
         create_punter(VladSolver2, name="Vlad-MCTS-2h", timeout=0.9, search_width=15, magic_moves=True, greedy_threshold=50),
         create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, name="FastGreedyStochasticBridgesVerticesMaxPunter"),
-        create_punter(UberFastGreedyStochasticPunter, name="UberFastGreedyStochasticPunter"),
+        # create_punter(UberFastGreedyStochasticPunter, name="UberFastGreedyStochasticPunter"),
     ]
 
 # please increment when you add new robots
-ARENA_VERSION = 8
+ARENA_VERSION = 9

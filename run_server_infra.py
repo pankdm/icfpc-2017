@@ -13,14 +13,15 @@ if __name__ == "__main__":
     map_file = sys.argv[1]
 
     punters = [
-        # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 1", use_splurges=True),
+        create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 1"),
+        create_punter(FastGreedyOptions, log=False, name="FastGreedyPunter 2", use_options=True),
+
+        # create_punter(VladSolver2, name="Vlad-MCTS-2h", timeout=0.9, search_width=15, magic_moves=True, greedy_threshold=50),
+        # create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, name="FastGreedyStochasticBridgesVerticesMaxPunter"),
+
+
+        # create_punter(ChaosOptionsPunter, log=True, name="ChaosPunter 1"),
         # create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 2"),
-
-        create_punter(VladSolver2, name="Vlad-MCTS-2h", timeout=0.9, search_width=15, magic_moves=True, greedy_threshold=50),
-        create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, name="FastGreedyStochasticBridgesVerticesMaxPunter"),
-
-
-        # create_punter(ChaosPunter, log=False, name="ChaosPunter 1"),
         # create_punter(ChaosPunter, log=False, name="ChaosPunter 2"),
         # create_punter(ChaosPunter, log=False, name="ChaosPunter 3"),
         # create_punter(ChaosPunter, log=False, name="ChaosPunter 4"),
@@ -42,6 +43,7 @@ if __name__ == "__main__":
     settings = {
         "futures": True,
         "splurges": True,
+        "options": True,
     }
 
     config = Config()
