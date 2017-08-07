@@ -90,8 +90,9 @@ def run():
     ll = list(penalty.iteritems())
     ll.sort(key=lambda x : x[1])
     print("OVERALL")
+    maxNMaps = max(nMaps.values())
     for player, penalty in ll:
-        if nMaps[player] == len(ORIGINAL_MAPS):
+        if nMaps[player] == maxNMaps:
             print("{} --> {}".format(player, penalty))
 
 
