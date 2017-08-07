@@ -56,8 +56,9 @@ if __name__ == "__main__":
             writeOutputJson(out)
         else:
             if log:
-                if "scores" in inp:
-                    print >>fLog, inp["scores"]
+                if "stop" in inp:
+                    if "scores" in inp["stop"]:
+                        print >>fLog, inp["stop"]["scores"]
     except Exception as ex:
         if log:
             print >>fLog, "Exception:", str(ex)
