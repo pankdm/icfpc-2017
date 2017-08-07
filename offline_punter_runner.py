@@ -52,7 +52,12 @@ if __name__ == "__main__":
         ack = readInputJson()
         inp = readInputJson()
         out = punter.run(inp)
-        writeOutputJson(out)
+        if out:
+            writeOutputJson(out)
+        else:
+            if log:
+                if "scores" in inp:
+                    print >>fLog, inp["scores"]
     except Exception as ex:
         if log:
             print >>fLog, "Exception:", str(ex)
