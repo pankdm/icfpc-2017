@@ -221,7 +221,7 @@ class FastGreedyStochasticPunter:
              print(max_score_random_gain, self.components.num_edges(), n_stochastic_steps, float(n_processed)/len(all_edges), "best_score_gain", best_score_gain, "best_bridge_gain", best_bridge_gain, "best_vertex_gain", best_vertex_gain, "best_stochastic_gain", best_stochastic_gain)
 
         if self.config.log:
-            print('Found {} that would give score {}'.format(best_st, best_score - current_score))
+            print('Found {} that would give score {}'.format(best_st, best_score))
 
         if best_score is None:
             # choose random if nothing found
@@ -273,7 +273,7 @@ class FastGreedyStochasticPunter:
             s, t =  self._select_greedy_edge()
             end = timer()
             if self.config.log:
-                print ('Finished select_greey_edge in {}s'.format(end - start))
+                print ('Finished select_greedy_edge in {}s'.format(end - start))
 
         return {
             "claim": {
@@ -310,7 +310,7 @@ class FastGreedyStochasticBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMa
         if self.num_moves < 2:
             return 50.0
         if self.num_moves < math.sqrt(self.world.n):
-            return 5.0
+            return 1.0
         return 0.0
 
 

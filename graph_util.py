@@ -91,7 +91,7 @@ def compute_bridge_scores(world, all_distances):
                     for v in world.mines:
                         if mine in all_distances[v]:
                             dv = all_distances[v][mine]
-                            if dv == dst + all_distances[f][v] + 1 or dv == df + all_distances[st][v]:
+                            if dv == dst + all_distances[f][v] + 1 or dv == df + all_distances[st][v] + 1:
                                 result[ (st, f) ] += 1
                                 result[ (f, st) ] += 1
     return result

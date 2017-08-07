@@ -35,6 +35,8 @@ class ComponentsListWithScores:
 
         if (i, j) in self.bridge_scores_:
             self.bridge_score_ += self.bridge_scores_[(i, j)]
+        elif (j, i) in self.bridge_scores_:
+            self.bridge_score_ += self.bridge_scores_[(j, i)]
 
         i = self.component(i)
         j = self.component(j)
