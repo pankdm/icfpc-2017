@@ -83,7 +83,7 @@ class VladSolver2:
                 padj[id][v].append(u)
                 free_edges.discard((u,v))
                 free_edges.discard((v,u))
-                
+
                 node = self._get_node(padj, (id + 1) % self.num, num_moves_left - 1, free_edges)
                 root.vchild.append([(u,v), node, 1])
                 root = node
@@ -136,7 +136,7 @@ class VladSolver2:
             padj[id][u].append(v)
             padj[id][v].append(u)
             id = (id + 1) % self.num
-        
+
         return self._eval(padj)
 
     def _eval(self, padj):
@@ -145,7 +145,7 @@ class VladSolver2:
             score = 0
             for m in self.mines:
                 res = self._bfs(m, padj[id])
-                score += sum([d*d for (_,d) in res.items()])
+                score += sum([self.dist[m][u]**2 for (u,_) in res.items()])
             scores.append(score)
         if self.sum_norm:
             mx = sum(scores) + 0.0
@@ -201,7 +201,7 @@ class VladSolver2:
             self.adj[u].append(v)
             self.adj[v].append(u)
             self.free_edges.add( tuple(sorted((u,v))) )
-        
+
         for mine in data['map']['mines']:
             self.mines.add(mine)
 
