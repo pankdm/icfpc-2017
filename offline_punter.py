@@ -31,6 +31,8 @@ class OfflinePunter:
                 res = self.process_setup(input_json)
             else:
                 res = self.process_move(input_json)
+        else:
+            res = {}
         if not "stop" in input_json:
             res["state"] = self.get_state_for_write()
         return res
