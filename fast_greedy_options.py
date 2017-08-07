@@ -289,6 +289,15 @@ class FastGreedyOptions(offline_punter.OfflinePunter):
             if self.config.log:
                 print('Finished select_greedy_edge in {}s'.format(end - start))
 
+        if self.settings.get("splurges", False):
+            # splurges of length 1 equivalent to regular moves
+            return {
+                "splurge": {
+                    "punter": self.punter_id,
+                    "route": [s, t],
+                },
+            }
+
         return {
             "claim": {
                 "punter": self.punter_id,

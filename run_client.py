@@ -8,7 +8,7 @@ if __name__ == "__main__":
     port = int(sys.argv[1])
 
     # punter = create_punter(FastGreedyPunter, splurges_on_claim=True, log=True)
-    punter = create_punter(FastGreedyOptions, use_options=True, log=True)
+    punter = create_punter(FastGreedyOptions, use_options=True, splurges_on_claim=True, log=True)
 
     client = Client(SERVER, port)
     client.run(punter)
