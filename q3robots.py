@@ -18,12 +18,13 @@ from config import *
 def create_all_robots():
     return [
         create_punter(ChaosPunter, name="ChaosSolver"),
+        create_punter(VladSolver2, name="Vlad-MCTS-2j"),
         create_punter(FastGreedyPunter, name="FastGreedyPunter"),
         create_punter(FastGreedyPunter, name="FastSplurges", splurges_on_claim=True),
-        create_punter(FastGreedyOptions, name="FastGreedyOptions", use_options=True),
+        create_punter(FastGreedyOptions, name="Fast Options", use_options=True),
     ]
 
 
 
 # please increment when you add new robots
-ARENA_VERSION = 16
+ARENA_VERSION = 17
