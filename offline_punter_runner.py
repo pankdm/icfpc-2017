@@ -31,6 +31,7 @@ def writeOutputJson(obj):
     jsonOut = json.dumps(obj)
     res = str(len(jsonOut)) + ":" + jsonOut
     sys.stdout.write(res)
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     punter = create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, log=False, name="FastGreedyStochasticBridgesVerticesMaxPunter 1")
