@@ -8,7 +8,11 @@ def create_all_robots():
         create_punter(FastGreedyStochasticPunter, name="FastGreedyStochasticPunter"),
         create_punter(FastGreedyStochasticBridgesMaxPunter, name="FastGreedyStochasticBridgesMaxPunter"),
         create_punter(VladSolver2, name="Vlad-MCTS-2h", timeout=0.9, search_width=15, magic_moves=True, greedy_threshold=50),
+<<<<<<< HEAD
         create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, name="FastGreedyStochasticBridgesVerticesMaxPunter"),
+=======
+        create_punter(UberFastGreedyStochasticPunter, name="UberFastGreedyStochasticPunter"),
+>>>>>>> update union find
     ]
 
 # please increment when you add new robots
