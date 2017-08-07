@@ -2,6 +2,7 @@
 import sys
 import json
 import os
+import time
 
 # from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedyStochasticMaxPunter, FastGreedyStochasticBridgesMaxPunter, FastGreedyStochasticBridgesVerticesMaxPunter
 from fast_greedy_options import FastGreedyOptions
@@ -54,6 +55,7 @@ def log_traceback(ex, ex_traceback=None):
 
 if __name__ == "__main__":
     try:
+        begin = time.clock()
         punter = create_punter(FastGreedyOptions, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegression")
         hs = punter.get_handshake()
         writeOutputJson(hs)
@@ -69,6 +71,7 @@ if __name__ == "__main__":
                         print >>fLog, "me: %d" % punter.punter_id, inp["stop"]["scores"]
         if log:
             fLog.flush()
+            print >>fLog, "took: %f" % (time.clock() - begin)
     except Exception as ex:
         if log:
             print >>fLog, "Exception:", str(ex)
