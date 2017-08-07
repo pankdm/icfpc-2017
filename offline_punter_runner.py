@@ -7,7 +7,7 @@ from fast_greedy_options import FastGreedyOptions
 
 from config import create_punter, Config
 
-log = len(sys.argv) > 1
+log = len(sys.argv) == 1
 
 if log:
     fLog = open("log", "w")
