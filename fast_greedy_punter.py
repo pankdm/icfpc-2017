@@ -32,7 +32,6 @@ class FastGreedyPunter:
 
 
     def process_setup(self, data):
-        tt = time()
         if self.config.log:
             print("Processing setup:")
             pprint(data)
@@ -77,7 +76,6 @@ class FastGreedyPunter:
         #         "source": s,
         #         "target": t
         #     }
-        pprint(time() -tt)
         return reply
 
     def process_stop(self, data):
