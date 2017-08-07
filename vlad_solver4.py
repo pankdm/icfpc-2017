@@ -131,6 +131,26 @@ class VladSolver4:
 
     def _bfs(self, mine, adj, xtra={}):
         q = deque()
+        q.append(mine)
+        res = {mine: 0}
+        while len(q) > 0:
+            u = q.popleft()
+            d = res[u]
+            for v in adj[u]:
+                if v not in res:
+                    q.append(v)
+                    res[v] = d + 1 
+
+            if u in xtra:
+                v = xtra[u]
+                if v not in res:
+                    q.append(v)
+                    res[v] = d + 1
+        return res
+
+    def _org_bfs(self, mine, adj, xtra={}):
+        tt = time()
+        q = deque()
         q.append((mine, 0))
         res = {}
         while len(q) > 0:
@@ -144,6 +164,7 @@ class VladSolver4:
                 v = xtra[u]
                 if v not in res:
                     q.append((v, d+1))
+        pprint(time() - tt)
         return res
 
     def get_handshake(self):

@@ -9,6 +9,7 @@ from graph_util import *
 from union_find_scores import *
 from client import *
 import graph_util
+from time import time
 
 def compute_score_slow(graph, mines, distances):
     total_score = 0
