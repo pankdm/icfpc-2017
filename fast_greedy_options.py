@@ -9,8 +9,9 @@ from graph_util import *
 from union_find_scores import *
 from client import *
 import graph_util
+import offline_punter
 
-class FastGreedyOptions:
+class FastGreedyOptions(offline_punter.OfflinePunter):
     def __init__(self, config):
         self.name = "greedy monkey" if not config.name else config.name
         self.num_moves = 0
