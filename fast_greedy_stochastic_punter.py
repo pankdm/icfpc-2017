@@ -140,8 +140,9 @@ class FastGreedyStochasticPunter:
 
 
     def _aggregate_random_scores(self, scores):
-        if len(scores) == 0: return 0
-        return float(sum(scores))/len(scores)/2
+        if len(scores) == 0:
+            return 0
+        return float(max(scores))//2
 
 
     def _select_greedy_edge(self):
@@ -286,9 +287,9 @@ class FastGreedyStochasticPunter:
 
 class FastGreedyStochasticMaxPunter(FastGreedyStochasticPunter):
     def _aggregate_random_scores(self, scores):
-        if len(scores) == 0:
+        if len(scores) == 0: 
             return 0
-        return float(max(scores))//2
+        return float(sum(scores))/len(scores)/2
 
 
 class FastGreedyStochasticBridgesMaxPunter(FastGreedyStochasticMaxPunter):
