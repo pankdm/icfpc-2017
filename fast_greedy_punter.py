@@ -11,16 +11,6 @@ from client import *
 import graph_util
 from time import time
 
-def compute_score_slow(graph, mines, distances):
-    total_score = 0
-    for mine in mines:
-        scores = run_bfs(mine, graph)
-        for target in scores:
-            d = distances.get(target, {}).get(mine, 0)
-            total_score += d * d
-    return total_score
-
-
 class FastGreedyPunter:
     def __init__(self, config):
         self.name = "greedy monkey" if not config.name else config.name
@@ -30,7 +20,19 @@ class FastGreedyPunter:
     def get_handshake(self):
         return {"me": self.name}
 
+    def get_state(self):
+        return (self.world, self.components, self.punter_id, self.num_punters, self.config, self.num_moves, self.my_credit, self.settings)
 
+    def set_state(self, state):
+        self.world = state[0]
+        self.components = state[1]
+        self.punter_id = state[2]
+        self.num_punters = state[3]
+        self.config = state[4]
+        self.num_moves = state[5]
+        self.my_credit = state[6]
+        self.settings = state[7]
+    
     def process_setup(self, data):
         if self.config.log:
             print("Processing setup:")
@@ -42,18 +44,14 @@ class FastGreedyPunter:
         map_data = data["map"]
         self.world = graph_util.World(map_data)
         self.graph = self.world.graph
-        self.graph_readonly = deepcopy(self.graph)
-
-        self.mines = self.world.mines
-
-        self.distances = graph_util.compute_distances(self.world)
+        distances = graph_util.compute_distances(self.world)
 
         if self.config.log:
             print('Calculated distances')
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.vertices, self.mines, self.distances)
+        self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, distances)
         for v in self.world.vertices:
             for x in self.graph[v]:
                 self.components.add_edge(v, x)

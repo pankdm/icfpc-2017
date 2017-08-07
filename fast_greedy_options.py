@@ -10,16 +10,6 @@ from union_find_scores import *
 from client import *
 import graph_util
 
-def compute_score_slow(graph, mines, distances):
-    total_score = 0
-    for mine in mines:
-        scores = run_bfs(mine, graph)
-        for target in scores:
-            d = distances.get(target, {}).get(mine, 0)
-            total_score += d * d
-    return total_score
-
-
 class FastGreedyOptions:
     def __init__(self, config):
         self.name = "greedy monkey" if not config.name else config.name
@@ -29,7 +19,22 @@ class FastGreedyOptions:
     def get_handshake(self):
         return {"me": self.name}
 
+    def get_state(self):
+        return (self.world, self.components, self.punter_id, self.num_punters, self.config, self.num_moves, self.my_credit, self.settings, self.my_graph, self.my_options, self.available_for_option)
 
+    def set_state(self, state):
+        self.world = state[0]
+        self.components = state[1]
+        self.punter_id = state[2]
+        self.num_punters = state[3]
+        self.config = state[4]
+        self.num_moves = state[5]
+        self.my_credit = state[6]
+        self.settings = state[7]
+        self.my_graph = state[8]
+        self.my_options = state[9]
+        self.available_for_option = state[10]
+    
     def process_setup(self, data):
         if self.config.log:
             print("Processing setup:")
@@ -40,21 +45,16 @@ class FastGreedyOptions:
 
         map_data = data["map"]
         self.world = graph_util.World(map_data)
-        self.graph = self.world.graph
-        self.graph_readonly = deepcopy(self.graph)
-
-        self.mines = self.world.mines
-
-        self.distances = graph_util.compute_distances(self.world)
+        distances = graph_util.compute_distances(self.world)
 
         if self.config.log:
             print('Calculated distances')
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.vertices, self.mines, self.distances)
+        self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, distances)
         for v in self.world.vertices:
-            for x in self.graph[v]:
+            for x in self.world.graph[v]:
                 self.components.add_edge(v, x)
         # maintain graph of our nodes
         self.my_graph = defaultdict(set)
@@ -110,7 +110,7 @@ class FastGreedyOptions:
 
     def _select_random_edge(self, graph):
         all_edges = []
-        for s, nodes in self.graph.items():
+        for s, nodes in self.world.graph.items():
             for t in nodes:
                 all_edges.append( (s, t) )
         index = random.randint(0, len(all_edges) - 1)
@@ -119,7 +119,7 @@ class FastGreedyOptions:
 
     def _select_greedy_edge(self):
         all_edges = []
-        for s, nodes in self.graph.items():
+        for s, nodes in self.world.graph.items():
             for t in nodes:
                 all_edges.append( (s, t) )
 
@@ -195,7 +195,7 @@ class FastGreedyOptions:
         if "move" in data:
             def process_edge(punter_id, s, t):
                 st = (s,t)
-                remove_edge(self.graph, st)
+                remove_edge(self.world.graph, st)
 
                 if punter_id == self.punter_id:
                     add_edge(self.my_graph, st)
@@ -267,7 +267,7 @@ class FastGreedyOptions:
 
         # take one at random
         if self.num_moves == 1:
-            s, t = self._select_random_edge(self.graph)
+            s, t = self._select_random_edge(self.world.graph)
             if self.config.log:
                 print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
         else:

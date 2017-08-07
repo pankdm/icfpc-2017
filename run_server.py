@@ -2,6 +2,7 @@ from server import Server
 
 from fast_greedy_punter import FastGreedyPunter
 from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedyStochasticMaxPunter, FastGreedyStochasticBridgesMaxPunter, FastGreedyStochasticBridgesVerticesMaxPunter
+from fast_greedy_options import FastGreedyOptions
 from vlad_solver2 import VladSolver2
 from vlad_solver4 import VladSolver4
 from greedy_punter import GreedyPunter
@@ -36,11 +37,13 @@ if __name__ == "__main__":
         create_punter(FastGreedyStochasticMaxPunter, log=False, name="FastGreedyStochasticMaxPunter 1"),
         create_punter(FastGreedyStochasticBridgesMaxPunter, log=False, name="FastGreedyStochasticBridgesMaxPunter 1"),
         create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, log=False, name="FastGreedyStochasticBridgesVerticesMaxPunter 1"),
+        create_punter(FastGreedyOptions, log=False, name="FastGreedyOptions"),
     ]
     random.shuffle(punters)
 
     settings = {
         "futures": True,
+        "options": True,
     }
 
     config = Config()

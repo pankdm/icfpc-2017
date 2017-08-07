@@ -2,11 +2,12 @@
 import sys
 import json
 
-from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedyStochasticMaxPunter, FastGreedyStochasticBridgesMaxPunter, FastGreedyStochasticBridgesVerticesMaxPunter
+# from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedyStochasticMaxPunter, FastGreedyStochasticBridgesMaxPunter, FastGreedyStochasticBridgesVerticesMaxPunter
+from fast_greedy_options import FastGreedyOptions
 
 from config import create_punter, Config
 
-log = True
+log = len(sys.argv) > 1
 
 if log:
     fLog = open("log", "w")
@@ -46,7 +47,7 @@ def log_traceback(ex, ex_traceback=None):
 
 if __name__ == "__main__":
     try:
-        punter = create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, log=False, name="FastGreedyStochasticBridgesVerticesMaxPunter 1")
+        punter = create_punter(FastGreedyOptions, log=False, name="FastGreedyOptions")
         hs = punter.get_handshake()
         writeOutputJson(hs)
         ack = readInputJson()
