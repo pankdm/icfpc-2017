@@ -172,7 +172,7 @@ class VladSolver2:
             for v in adj[u]:
                 if v not in res:
                     q.append(v)
-                    res[v] = d + 1 
+                    res[v] = d + 1
 
             if u in xtra:
                 v = xtra[u]
@@ -305,4 +305,5 @@ class VladSolver2:
                 pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
                     self.name, self.num_moves_left, root.nsimul, time() - tbegin, (u,v)))
 
+        self.tr = {}
         return {'claim': {'punter': self.id, 'source': u, 'target': v}}
