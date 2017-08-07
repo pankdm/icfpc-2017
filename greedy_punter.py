@@ -155,7 +155,7 @@ class GreedyPunter:
 
     def process_move(self, data):
         if self.config.log:
-            print ''
+            print('')
             print("Processing move:")
             pprint(data)
 
@@ -182,13 +182,13 @@ class GreedyPunter:
         if self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
             if self.config.log:
-                print 'Move: {}, got random move {}'.format(self.num_moves, (s,t))
+                print('Move: {}, got random move {}'.format(self.num_moves, (s,t)))
         else:
             start = timer()
             s, t =  self._select_greedy_edge()
             end = timer()
             if self.config.log:
-                print ('Finished select_greey_edge in {}s'.format(end - start))
+                print('Finished select_greey_edge in {}s'.format(end - start))
 
         # add_edge(self.my_graph, (s, t))
 

@@ -235,7 +235,7 @@ class Server:
             for p_index, p in enumerate(self.punters):
                 if self.config.log:
                     print
-                    print '{}/{} == next round =='.format(num_moves + 1, self.total_moves)
+                    print('{}/{} == next round =='.format(num_moves + 1, self.total_moves))
                 moves = []
                 for punter_id, move in self.previous_moves.items():
                     moves.append(move)

@@ -33,7 +33,7 @@ if __name__ == "__main__":
         create_punter(FastGreedyStochasticPunter, log=False, name="FastGreedyStochasticPunter 1"),
         create_punter(FastGreedyStochasticMaxPunter, log=False, name="FastGreedyStochasticMaxPunter 1"),
         create_punter(FastGreedyStochasticBridgesMaxPunter, log=False, name="FastGreedyStochasticBridgesMaxPunter 1"),
-        create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, log=True, name="FastGreedyStochasticBridgesVerticesMaxPunter 1"),
+        create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, log=False, name="FastGreedyStochasticBridgesVerticesMaxPunter 1"),
     ]
     random.shuffle(punters)
 

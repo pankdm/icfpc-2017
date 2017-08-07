@@ -168,14 +168,14 @@ class FastGreedyPunter:
                 route.append(next)
                 break
         if self.config.log:
-            print 'Returning route: {}'.format(route)
+            print('Returning route: {}'.format(route))
         return route
 
 
 
     def process_move(self, data):
         if self.config.log:
-            print ''
+            print('')
             print("Processing move:")
             pprint(data)
 
@@ -239,7 +239,7 @@ class FastGreedyPunter:
         if self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
             if self.config.log:
-                print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
+                print('Move: {}, got random move {}'.format(self.num_moves, (s, t)))
         else:
             start = timer()
             s, t =  self._select_greedy_edge()

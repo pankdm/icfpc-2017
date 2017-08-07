@@ -107,7 +107,7 @@ class ChaosPunter:
 
     def process_move(self, data):
         if self.config.log:
-            print ''
+            print('')
             print("Processing move:")
             pprint(data)
 

@@ -11,13 +11,18 @@ from graph_util import *
 from union_find_scores import *
 from client import *
 import graph_util
+import cPickle
 
 class FastGreedyStochasticPunter:
     def __init__(self, config):
-        self.name = "greedy monkey" if not config.name else config.name
+        self.name = "fast greedy stochastic monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
 
+    def save(self):
+        begin = time.clock()
+        sData = cPickle.dumps( (self.components) )
+        print("time", time.clock() - begin, "len", len(sData))
 
     def weight_score(self):
         return 1.0
@@ -60,8 +65,6 @@ class FastGreedyStochasticPunter:
         map_data = data["map"]
         self.world = graph_util.World(map_data)
         self.graph = self.world.graph
-        self.graph_readonly = deepcopy(self.graph)
-
         self.mines = self.world.mines
 
         self.distances = graph_util.compute_all_distances(self.world)
@@ -87,8 +90,6 @@ class FastGreedyStochasticPunter:
         for i in xrange(self.world.n):
             for x in self.graph[i]:
                 self.components.add_edge(i, x)
-        # maintain graph of our nodes
-        self.my_graph = defaultdict(set)
 
         # default reply
         reply = {"ready": self.punter_id}
@@ -237,7 +238,7 @@ class FastGreedyStochasticPunter:
 
     def process_move(self, data):
         if self.config.log:
-            print ''
+            print('')
             print("Processing move:")
             pprint(data)
 
@@ -258,8 +259,6 @@ class FastGreedyStochasticPunter:
 
                     punter_id = move["claim"]["punter"]
                     if punter_id == self.punter_id:
-                        add_edge(self.my_graph, st)
-
                         self.components.union(s, t)
                     else:
                         self.components.remove_edge(s, t)
@@ -268,13 +267,15 @@ class FastGreedyStochasticPunter:
         if False and self.num_moves == 1:
             s, t = self._select_random_edge(self.graph)
             if self.config.log:
-                print 'Move: {}, got random move {}'.format(self.num_moves, (s, t))
+                print('Move: {}, got random move {}'.format(self.num_moves, (s, t)))
         else:
             start = timer()
             s, t =  self._select_greedy_edge()
             end = timer()
             if self.config.log:
                 print('Finished select_greedy_edge in {}s'.format(end - start))
+
+        # self.save()
 
         return {
             "claim": {
