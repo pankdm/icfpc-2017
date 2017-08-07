@@ -47,7 +47,7 @@ def log_traceback(ex, ex_traceback=None):
 
 if __name__ == "__main__":
     try:
-        punter = create_punter(FastGreedyOptions, log=False, name="FastGreedyOptions")
+        punter = create_punter(FastGreedyOptions, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegression")
         hs = punter.get_handshake()
         writeOutputJson(hs)
         ack = readInputJson()
