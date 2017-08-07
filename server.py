@@ -136,7 +136,7 @@ class Server:
             # now check that the path is valid
             ok = True
             for i in xrange(len(splurges) - 1):
-                s = splurges[0]
+                s = splurges[i]
                 t = splurges[i + 1]
                 st = canonical(s, t)
                 if st in self.claimed_roads:
