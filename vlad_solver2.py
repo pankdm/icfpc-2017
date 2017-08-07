@@ -60,12 +60,12 @@ class VladSolver2:
 
     def __init__(self, config):
         self.name = config.name
-        self.timeout = getattr(config, 'timeout', 0.95)
+        self.timeout = getattr(config, 'timeout', 0.9)
         self.log = getattr(config, 'log', False)
         self.sum_norm = getattr(config, 'sum_norm', True)
-        self.playout_max_depth = getattr(config, 'playout_max_depth', 9999)
-        self.search_width = getattr(config, 'search_width', 9999)
-        self.magic_moves = getattr(config, 'magic_moves', False)
+        self.playout_max_depth = getattr(config, 'playout_max_depth', 50)
+        self.search_width = getattr(config, 'search_width', 15)
+        self.magic_moves = getattr(config, 'magic_moves', True)
         self.greedy_threshold = getattr(config, 'greedy_threshold', 9999)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
