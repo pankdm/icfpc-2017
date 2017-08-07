@@ -1,13 +1,13 @@
 import random
 
 class ComponentsListWithScores:
-    def __init__(self, n, mines = {}, distances = {}, bridge_scores = {}, vertex_scores = {}):
-        self.lists_ = []
-        self.vertices_ = []
-        for i in range(n):
-            self.lists_.append(set())
-            self.lists_[i].add(i)
-            self.vertices_.append(i)
+    def __init__(self, vertices, mines = {}, distances = {}, bridge_scores = {}, vertex_scores = {}):
+        self.lists_ = {}
+        self.vertices_ = {}
+        for v in vertices:
+            self.lists_[v] = set()
+            self.lists_[v].add(v)
+            self.vertices_[v] = v
         self.score_ = 0
         self.mines_ = mines
         self.distances_ = distances

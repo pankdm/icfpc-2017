@@ -52,10 +52,10 @@ class FastGreedyOptions:
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.n, self.mines, self.distances)
-        for i in xrange(self.world.n):
-            for x in self.graph[i]:
-                self.components.add_edge(i, x)
+        self.components = ComponentsListWithScores(self.world.vertices, self.mines, self.distances)
+        for v in self.world.vertices:
+            for x in self.graph[v]:
+                self.components.add_edge(v, x)
         # maintain graph of our nodes
         self.my_graph = defaultdict(set)
 

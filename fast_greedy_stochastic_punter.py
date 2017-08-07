@@ -76,11 +76,11 @@ class FastGreedyStochasticPunter:
             for city, scores in sorted(self.distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.n, self.mines, self.distances, self.bridge_scores, self.vertex_scores)
+        self.components = ComponentsListWithScores(self.world.vertices, self.mines, self.distances, self.bridge_scores, self.vertex_scores)
         self.components.start_transaction()
-        for i in xrange(self.world.n):
-            for x in self.graph[i]:
-                self.components.add_edge(i, x)
+        for v in self.world.vertices:
+            for x in self.graph[v]:
+                self.components.add_edge(v, x)
 
         # default reply
         reply = {"ready": self.punter_id}
@@ -286,13 +286,13 @@ class FastGreedyStochasticMaxPunter(FastGreedyStochasticPunter):
 
 class FastGreedyStochasticBridgesMaxPunter(FastGreedyStochasticMaxPunter):
     def weight_bridges(self):
-        if self.num_moves < 3.0*math.sqrt(self.world.n):
+        if self.num_moves < 3.0*math.sqrt(len(self.world.vertices)):
             return 10.0
         return 1.0
 
 
     def weight_stochastic(self):
-        if self.num_moves < 3.0*math.sqrt(self.world.n):
+        if self.num_moves < 3.0*math.sqrt(len(self.world.vertices)):
             return 0.0
         return 1.0
 
@@ -302,13 +302,13 @@ class FastGreedyStochasticBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMa
     def weight_vertices(self):
         if self.num_moves < 2:
             return 50.0
-        if self.num_moves < math.sqrt(self.world.n):
+        if self.num_moves < math.sqrt(len(self.world.vertices)):
             return 1.0
         return 0.0
 
 
     def weight_stochastic(self):
-        if self.num_moves < 3.0*math.sqrt(self.world.n):
+        if self.num_moves < 3.0*math.sqrt(len(self.world.vertices)):
             return 0.0
         return 1.0
 
