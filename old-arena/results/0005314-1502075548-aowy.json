@@ -1,0 +1,1 @@
+"{\"map\": \"maps/sample.json\", \"settings\": {\"futures\": true}, \"arena_version\": 9, \"ts\": 1502075548, \"results\": [{\"score\": 27, \"punter\": \"ChaosSolver\", \"rank\": 1}, {\"score\": 22, \"punter\": \"FastGreedyStochasticBridgesMaxPunter\", \"rank\": 2}], \"map_settings\": {\"n\": 2}}"

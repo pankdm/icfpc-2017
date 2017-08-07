@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     punters = [
         create_punter(FastGreedyPunter, log=False, name="FastGreedyPunter 1"),
-        create_punter(FastGreedyOptions, log=False, name="FastGreedyPunter 2", use_options=True),
+        create_punter(FastGreedyOptions, log=True, name="Options", use_options=True),
 
         # create_punter(VladSolver2, name="Vlad-MCTS-2h", timeout=0.9, search_width=15, magic_moves=True, greedy_threshold=50),
         # create_punter(FastGreedyStochasticBridgesVerticesMaxPunter, name="FastGreedyStochasticBridgesVerticesMaxPunter"),
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         # create_punter(FastGreedyStochasticMaxPunter, log=False, name="FastGreedyStochasticMaxPunter 1"),
         # create_punter(FastGreedyStochasticBridgesMaxPunter, log=True, name="FastGreedyStochasticBridgesMaxPunter 1"),
     ]
-    # random.shuffle(punters)
+    random.shuffle(punters)
 
     settings = {
         "futures": True,

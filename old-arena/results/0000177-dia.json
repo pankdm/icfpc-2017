@@ -1,0 +1,1 @@
+"{\"map\": \"maps/sample.json\", \"ts\": 1501993597, \"results\": [{\"score\": 22, \"punter\": \"VladSolver1\", \"rank\": 1}, {\"score\": 9, \"punter\": \"FastGreedyPunter\", \"rank\": 2}], \"map_settings\": {\"n\": 2}, \"settings\": {\"futures\": true}}"

@@ -3,6 +3,7 @@ from copy import deepcopy
 import random
 import time
 import math
+import cPickle
 
 from pprint import pprint
 from timeit import default_timer as timer
@@ -11,14 +12,25 @@ from graph_util import *
 from union_find_scores import *
 from client import *
 import graph_util
-import cPickle
+import offline_punter
 
-class FastGreedyStochasticPunter:
+class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
     def __init__(self, config):
         self.name = "fast greedy stochastic monkey" if not config.name else config.name
         self.num_moves = 0
         self.config = config
 
+    def get_state(self):
+        return (self.world, self.components, self.punter_id, self.num_punters, self.config, self.num_moves)
+
+    def set_state(self, state):
+        self.world = state[0]
+        self.components = state[1]
+        self.punter_id = state[2]
+        self.num_punters = state[3]
+        self.config = state[4]
+        self.num_moves = state[5]
+    
     def save(self):
         begin = time.clock()
         sData = cPickle.dumps( (self.components, self.world) )
@@ -55,7 +67,7 @@ class FastGreedyStochasticPunter:
         map_data = data["map"]
         self.world = graph_util.World(map_data)
 
-        self.distances = graph_util.compute_distances(self.world)
+        distances = graph_util.compute_distances(self.world)
         all_distances = graph_util.compute_all_distances(self.world)
         t0 = time.clock()
         bridge_scores = graph_util.compute_bridge_scores(self.world, all_distances)
@@ -71,10 +83,10 @@ class FastGreedyStochasticPunter:
 
         if self.config.log:
             print('Calculated distances')
-            for city, scores in sorted(self.distances.items()):
+            for city, scores in sorted(distances.items()):
                 print('{} -> {}'.format(city, scores))
 
-        self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, self.distances, bridge_scores, vertex_scores)
+        self.components = ComponentsListWithScores(self.world.vertices, self.world.mines, distances, bridge_scores, vertex_scores)
         self.components.start_transaction()
         for v in self.world.vertices:
             for x in self.world.graph[v]:
@@ -156,7 +168,7 @@ class FastGreedyStochasticPunter:
         best_vertex_gain = 0
         best_stochastic_gain = 0
         for st in all_edges:
-            if time.clock() > begin0 + 0.95:
+            if time.clock() > begin0 + 0.7:
                 break
             n_processed += 1
             s, t = st
@@ -169,29 +181,30 @@ class FastGreedyStochasticPunter:
                 n_iterations = 0
                 n_stochastic_edges = min(self.components.num_edges() / self.num_punters, 10)
                 begin = time.clock()
-                c_move_time_limit = 0.7
+                c_move_time_limit = 0.5
                 score_gain = self.components.score() - current_score
                 bridge_score_gain = self.components.bridge_score() - current_bridge_score
                 vertex_score_gain = self.components.vertex_score() - current_vertex_score
-                while (time.clock() - begin)*len(all_edges) < c_move_time_limit:
-                    n_transactions = 0
-                    j = 0
-                    while j < n_stochastic_edges:
-                        if (time.clock() - begin)*len(all_edges) > c_move_time_limit:
-                            break
-                        if 0 != self.components.num_edges():
-                            random_edge = self.components.random_edge()
-                            # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
-                            if self.components.component(random_edge[0]) != self.components.component(random_edge[1]):
-                                self.components.start_transaction()
-                                self.components.union(random_edge[0], random_edge[1])
-                                n_transactions += 1
-                                n_stochastic_steps += 1
-                                j += 1
-                    n_iterations += 1
-                    score_random_gains.append(self.components.score() - score_before_random)
-                    for j in xrange(n_transactions):
-                        self.components.rollback_transaction()
+                if 0 != self.weight_vertices():
+                    while (time.clock() - begin)*len(all_edges) < c_move_time_limit:
+                        n_transactions = 0
+                        j = 0
+                        while j < n_stochastic_edges:
+                            if (time.clock() - begin)*len(all_edges) > c_move_time_limit:
+                                break
+                            if 0 != self.components.num_edges():
+                                random_edge = self.components.random_edge()
+                                # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
+                                if self.components.component(random_edge[0]) != self.components.component(random_edge[1]):
+                                    self.components.start_transaction()
+                                    self.components.union(random_edge[0], random_edge[1])
+                                    n_transactions += 1
+                                    n_stochastic_steps += 1
+                                    j += 1
+                        n_iterations += 1
+                        score_random_gains.append(self.components.score() - score_before_random)
+                        for j in xrange(n_transactions):
+                            self.components.rollback_transaction()
 
                 if score_random_gains:
                     max_score_random_gain = max(max_score_random_gain, score_random_gains[-1])
@@ -309,6 +322,11 @@ class FastGreedyStochasticBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMa
         if self.num_moves < 3.0*math.sqrt(len(self.world.vertices)):
             return 0.0
         return 1.0
+
+
+class FastGreedyStochasticVerticesMaxPunter(FastGreedyStochasticBridgesVerticesMaxPunter):
+    def weight_bridges(self):
+        return 0.0
 
 
 class FastGreedyBridgesVerticesMaxPunter(FastGreedyStochasticBridgesMaxPunter):

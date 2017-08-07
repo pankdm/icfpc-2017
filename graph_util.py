@@ -110,6 +110,12 @@ def compute_bridge_scores(world, all_distances):
                             if dv == dst + all_distances[f][v] + 1 or dv == df + all_distances[st][v] + 1:
                                 result[ (st, f) ] += 1
                                 result[ (f, st) ] += 1
+    
+    if len(result) > 0:
+        mx = max(result.values())
+        for k in result.keys():
+            result[k] /= mx
+
     return result
 
 

@@ -1,0 +1,1 @@
+"{\"map\": \"maps/circle.json\", \"ts\": 1502001195, \"results\": [{\"score\": 232, \"punter\": \"VladSolver1\", \"rank\": 1}, {\"score\": 216, \"punter\": \"VladSolver1-sum\", \"rank\": 2}, {\"score\": 129, \"punter\": \"FastGreedyPunter\", \"rank\": 3}, {\"score\": 72, \"punter\": \"ChaosSolver\", \"rank\": 4}], \"map_settings\": {\"n\": 4}, \"settings\": {\"futures\": true}}"

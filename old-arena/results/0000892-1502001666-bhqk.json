@@ -1,0 +1,1 @@
+"{\"map\": \"maps/Sierpinski-triangle.json\", \"ts\": 1502001666, \"results\": [{\"score\": 1387, \"punter\": \"FastGreedyStochasticPunter\", \"rank\": 1}, {\"score\": 1021, \"punter\": \"FastGreedyPunter\", \"rank\": 2}, {\"score\": 132, \"punter\": \"ChaosSolver\", \"rank\": 3}], \"map_settings\": {\"n\": 3}, \"settings\": {\"futures\": true}}"

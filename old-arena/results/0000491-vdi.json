@@ -1,0 +1,1 @@
+"{\"map\": \"maps/lambda.json\", \"ts\": 1501997552, \"results\": [{\"score\": 582, \"punter\": \"VladSolver1-sum\", \"rank\": 1}, {\"score\": 542, \"punter\": \"FastGreedyPunter\", \"rank\": 2}, {\"score\": 225, \"punter\": \"VladSolver1\", \"rank\": 3}, {\"score\": 34, \"punter\": \"ChaosSolver\", \"rank\": 4}], \"map_settings\": {\"n\": 4}, \"settings\": {\"futures\": true}}"

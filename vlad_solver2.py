@@ -4,6 +4,7 @@ from time import time, sleep
 from pprint import pprint
 from collections import deque, defaultdict
 from random import shuffle, randint
+import offline_punter
 
 class Node:
     def __init__(self):
@@ -13,15 +14,59 @@ class Node:
         self.uchild = deque()
 
 
-class VladSolver2:
+class VladSolver2(offline_punter.OfflinePunter):
+    def get_state(self):
+        state = []
+        state.append(self.name)
+        state.append(self.timeout)
+        state.append(self.log)
+        state.append(self.sum_norm)
+        state.append(self.playout_max_depth)
+        state.append(self.search_width)
+        state.append(self.magic_moves)
+        state.append(self.greedy_threshold)
+        state.append(self.id)
+        state.append(self.num)
+        state.append(self.adj)
+        state.append(self.mines)
+        state.append(self.dist)
+        state.append(self.sum_dist_sc)
+        state.append(self.sum_mine_sc)
+        state.append(self.tr)
+        state.append(self.free_edges)
+        state.append(self.padj)
+        state.append(self.num_moves_left)
+        return state
+
+    def set_state(self, state):
+        self.name = state[0]
+        self.timeout = state[1]
+        self.log = state[2]
+        self.sum_norm = state[3]
+        self.playout_max_depth = state[4]
+        self.search_width = state[5]
+        self.magic_moves = state[6]
+        self.greedy_threshold = state[7]
+        self.id = state[8]
+        self.num = state[9]
+        self.adj = state[10]
+        self.mines = state[11]
+        self.dist = state[12]
+        self.sum_dist_sc = state[13]
+        self.sum_mine_sc = state[14]
+        self.tr = state[15]
+        self.free_edges = state[16]
+        self.padj = state[17]
+        self.num_moves_left = state[18]
+
     def __init__(self, config):
         self.name = config.name
-        self.timeout = getattr(config, 'timeout', 0.95)
+        self.timeout = getattr(config, 'timeout', 0.9)
         self.log = getattr(config, 'log', False)
         self.sum_norm = getattr(config, 'sum_norm', True)
-        self.playout_max_depth = getattr(config, 'playout_max_depth', 9999)
-        self.search_width = getattr(config, 'search_width', 9999)
-        self.magic_moves = getattr(config, 'magic_moves', False)
+        self.playout_max_depth = getattr(config, 'playout_max_depth', 50)
+        self.search_width = getattr(config, 'search_width', 15)
+        self.magic_moves = getattr(config, 'magic_moves', True)
         self.greedy_threshold = getattr(config, 'greedy_threshold', 9999)
 
     def _get_node(self, padj, id, num_moves_left, free_edges):
@@ -172,7 +217,7 @@ class VladSolver2:
             for v in adj[u]:
                 if v not in res:
                     q.append(v)
-                    res[v] = d + 1 
+                    res[v] = d + 1
 
             if u in xtra:
                 v = xtra[u]
@@ -180,6 +225,7 @@ class VladSolver2:
                     q.append(v)
                     res[v] = d + 1
         return res
+
     def _xbfs(self, mine, adj):
         q = deque()
         q.append((mine, 0))
@@ -204,7 +250,7 @@ class VladSolver2:
         self.adj = {}
         self.mines = set([])
         self.dist = {}
-        self.sum_dist_sc = defaultdict(lambda: 0)
+        self.sum_dist_sc = defaultdict(int)
         self.sum_mine_sc = {}
         self.tr = {}
         self.free_edges = set([])
@@ -228,15 +274,6 @@ class VladSolver2:
         self.padj = {i: defaultdict(list) for i in range(self.num)}
         self.num_moves_left = len(data['map']['rivers'])
 
-        #pprint(self.id)
-        #pprint(self.num)
-        #pprint(self.adj)
-        #pprint(self.mines)
-        #pprint(self.dist)
-        #pprint(self.free_edges)
-        #pprint(self.padj)
-        #pprint(self.num_moves_left)
-
         return {'ready': self.id}
 
     def process_stop(self, data):
@@ -258,7 +295,16 @@ class VladSolver2:
                 self.padj[id][v].append(u)
                 self.free_edges.discard( (u,v) )
                 self.free_edges.discard( (v,u) )
-            self.num_moves_left -= 1
+                self.num_moves_left -= 1
+            if 'splurge' in mv:
+                id = mv['splurge']['punter']
+                for i in range(1, len(mv['splurge']['route'])):
+                    (u,v) = (mv['splurge']['route'][i-1], mv['splurge']['route'][i])
+                    self.padj[id][u].append(v)
+                    self.padj[id][v].append(u)
+                    self.free_edges.discard( (u,v) )
+                    self.free_edges.discard( (v,u) )
+                    self.num_moves_left -= 1
 
         has_move = False
         if self.num_moves_left > self.greedy_threshold:
@@ -298,11 +344,18 @@ class VladSolver2:
                 sc = (cnode.score + 0.0) / cnode.nsimul
                 opts.append( (sc, i) )
 
-            i = max(opts)[1]
-            (u,v) = root.vchild[i][0]   # best move (haha)
+            if 0 != len(opts):
+                i = max(opts)[1]
+                (u,v) = root.vchild[i][0]   # best move (haha)
+            else:
+                if 0 != len(self.free_edges):
+                    (u, v) = next(iter(self.free_edges))
+                else:
+                    return {'pass': {'punter': self.id}}
 
             if self.log:
                 pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
                     self.name, self.num_moves_left, root.nsimul, time() - tbegin, (u,v)))
 
+        self.tr = {}
         return {'claim': {'punter': self.id, 'source': u, 'target': v}}

@@ -168,17 +168,18 @@ class Server:
                 # self.per_player_credit[punter_id] -= 1
             return move
 
+        name = self.names[punter_id]
         if "claim" in move:
             s = move["claim"]["source"]
             t = move["claim"]["target"]
             st = canonical(s, t)
             if st in self.claimed_roads:
-                print ('WARNING: trying to claim road: {} already taken by {}'.format(
+                print ('WARNING: player {} trying to claim road: {} already taken by {}'.format(
+                    name,
                     move,
-                    self.claimed_roads[st]))
+                    self.names[self.claimed_roads[st]]))
                 return PASS_MOVE
             else:
-                name = self.names[punter_id]
                 if not t in self.world.graph[s]:
                     print ("ERROR player {} is claiming non-existing edge {}".format(
                         name,
