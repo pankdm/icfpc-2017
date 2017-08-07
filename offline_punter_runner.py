@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import json
+import os
 
 # from fast_greedy_stochastic_punter import FastGreedyStochasticPunter, FastGreedyStochasticMaxPunter, FastGreedyStochasticBridgesMaxPunter, FastGreedyStochasticBridgesVerticesMaxPunter
 from fast_greedy_options import FastGreedyOptions
@@ -9,8 +10,14 @@ from config import create_punter, Config
 
 log = len(sys.argv) == 1
 
+def next_name(prefix):
+    index = 0
+    while os.path.isfile(prefix + str(index)):
+        index += 1
+    return prefix + str(index)
+
 if log:
-    fLog = open("log", "w")
+    fLog = open(next_name("log"), "w")
 
 def read(k):
     res = sys.stdin.read(k)

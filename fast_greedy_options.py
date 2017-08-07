@@ -21,7 +21,7 @@ class FastGreedyOptions(offline_punter.OfflinePunter):
         return {"me": self.name}
 
     def get_state(self):
-        return (self.world, self.components, self.punter_id, self.num_punters, self.config, self.num_moves, self.my_credit, self.settings, self.my_graph, self.my_options, self.available_for_option)
+        return [self.world, self.components, self.punter_id, self.num_punters, self.config, self.num_moves, self.my_credit, self.settings, self.my_graph, self.my_options, self.available_for_option]
 
     def set_state(self, state):
         self.world = state[0]
