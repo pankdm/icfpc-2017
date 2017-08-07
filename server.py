@@ -104,9 +104,13 @@ class Server:
         self.per_player_credit = {}
         for i in range(len(self.punters)):
             self.per_player_credit[i] = 0
-
-
         self.splurges_enabled = settings.get("splurges", False)
+
+        # for options support
+        self.per_player_options = {}
+        for i in range(len(self.punters)):
+            self.per_player_options[i] = len(self.world.mines)
+        self.options_enabled = settings.get("options", False)
 
         # data to dump that is useful for webserver visualization
         self.all_moves = []
@@ -164,23 +168,51 @@ class Server:
                 # self.per_player_credit[punter_id] -= 1
             return move
 
-        if "claim" not in move:
-            # probably should never happen
-            print ('ERROR: Unknown move {}'.format(move))
-            return move
+        if "claim" in move:
+            s = move["claim"]["source"]
+            t = move["claim"]["target"]
+            st = canonical(s, t)
+            if st in self.claimed_roads:
+                print ('WARNING: trying to claim road: {} already taken by {}'.format(
+                    move,
+                    self.claimed_roads[st]))
+                return PASS_MOVE
+            else:
+                self.claimed_roads[st] = punter_id
+                add_edge(self.per_punter_graph[punter_id], st)
+                return move
 
-        s = move["claim"]["source"]
-        t = move["claim"]["target"]
-        st = canonical(s, t)
-        if st in self.claimed_roads:
-            print ('WARNING: trying to claim road: {} already taken by {}'.format(
-                move,
-                self.claimed_roads[st]))
-            return PASS_MOVE
-        else:
+        if "option" in move:
+            if not self.options_enabled:
+                print ('ERROR: trying to use options when not enabled: {}'.format(move))
+                return PASS_MOVE
+
+            s = move["option"]["source"]
+            t = move["option"]["target"]
+            st = canonical(s, t)
+            claimer_id = self.claimed_roads.get(st, None)
+            if claimer_id is None:
+                print ("ERROR: {} wasn't claimed yet: {}".format(st, move))
+                return PASS_MOVE
+
+            if claimer_id == punter_id:
+                print ("ERROR: {} is claimed by the same player {}: {}".format(st, claimer_id, move))
+                return PASS_MOVE
+
+            if self.per_player_options[punter_id] == 0:
+                print ("ERROR: not enough options to use: {}".format(move))
+                return PASS_MOVE
+
+            assert self.per_player_options[punter_id] > 0
+            self.per_player_options[punter_id] -= 1
             self.claimed_roads[st] = punter_id
             add_edge(self.per_punter_graph[punter_id], st)
             return move
+
+
+        # probably should never happen
+        print ('ERROR: Unknown move {}'.format(move))
+        return move
 
 
     def _compute_scores(self):
