@@ -260,7 +260,7 @@ class Server:
             end = timer()
             delta = end - start
             if delta > SETUP_TIMEOUT_S:
-                print ('ERROR: robot {} took {}s for setup!!!'.format(
+                print ('ERROR: robot {} took {}s for move!!!'.format(
                     p_name,
                     delta
                 ))
