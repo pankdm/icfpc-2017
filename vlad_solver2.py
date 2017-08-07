@@ -36,7 +36,7 @@ class VladSolver2(offline_punter.OfflinePunter):
         state.append(self.free_edges)
         state.append(self.padj)
         state.append(self.num_moves_left)
-        return tuple(state)
+        return state
 
     def set_state(self, state):
         self.name = state[0]
@@ -225,6 +225,7 @@ class VladSolver2(offline_punter.OfflinePunter):
                     q.append(v)
                     res[v] = d + 1
         return res
+
     def _xbfs(self, mine, adj):
         q = deque()
         q.append((mine, 0))
@@ -249,7 +250,7 @@ class VladSolver2(offline_punter.OfflinePunter):
         self.adj = {}
         self.mines = set([])
         self.dist = {}
-        self.sum_dist_sc = defaultdict(lambda: 0)
+        self.sum_dist_sc = defaultdict(int)
         self.sum_mine_sc = {}
         self.tr = {}
         self.free_edges = set([])
