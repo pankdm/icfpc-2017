@@ -124,6 +124,15 @@ class ChaosPunter:
                     t = move["claim"]["target"]
                     remove_edge(self.graph, (s,t))
 
+        if "splurge" in move:
+            splurges = move["splurge"]["route"]
+            punter_id = move["splurge"]["punter"]
+            for i in xrange(len(splurges) - 1):
+                s = splurges[i]
+                t = splurges[i + 1]
+                remove_edge(self.graph, (s, t))
+
+
         # take one at random
         s, t = self._select_random_edge(self.graph)
         if self.config.log:
