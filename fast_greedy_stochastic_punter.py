@@ -185,25 +185,26 @@ class FastGreedyStochasticPunter(offline_punter.OfflinePunter):
                 score_gain = self.components.score() - current_score
                 bridge_score_gain = self.components.bridge_score() - current_bridge_score
                 vertex_score_gain = self.components.vertex_score() - current_vertex_score
-                while (time.clock() - begin)*len(all_edges) < c_move_time_limit:
-                    n_transactions = 0
-                    j = 0
-                    while j < n_stochastic_edges:
-                        if (time.clock() - begin)*len(all_edges) > c_move_time_limit:
-                            break
-                        if 0 != self.components.num_edges():
-                            random_edge = self.components.random_edge()
-                            # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
-                            if self.components.component(random_edge[0]) != self.components.component(random_edge[1]):
-                                self.components.start_transaction()
-                                self.components.union(random_edge[0], random_edge[1])
-                                n_transactions += 1
-                                n_stochastic_steps += 1
-                                j += 1
-                    n_iterations += 1
-                    score_random_gains.append(self.components.score() - score_before_random)
-                    for j in xrange(n_transactions):
-                        self.components.rollback_transaction()
+                if 0 != self.weight_vertices():
+                    while (time.clock() - begin)*len(all_edges) < c_move_time_limit:
+                        n_transactions = 0
+                        j = 0
+                        while j < n_stochastic_edges:
+                            if (time.clock() - begin)*len(all_edges) > c_move_time_limit:
+                                break
+                            if 0 != self.components.num_edges():
+                                random_edge = self.components.random_edge()
+                                # print random_edge, self.components.component(random_edge[0]), self.components.component(random_edge[1])
+                                if self.components.component(random_edge[0]) != self.components.component(random_edge[1]):
+                                    self.components.start_transaction()
+                                    self.components.union(random_edge[0], random_edge[1])
+                                    n_transactions += 1
+                                    n_stochastic_steps += 1
+                                    j += 1
+                        n_iterations += 1
+                        score_random_gains.append(self.components.score() - score_before_random)
+                        for j in xrange(n_transactions):
+                            self.components.rollback_transaction()
 
                 if score_random_gains:
                     max_score_random_gain = max(max_score_random_gain, score_random_gains[-1])
