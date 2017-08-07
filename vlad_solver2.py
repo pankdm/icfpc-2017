@@ -343,8 +343,14 @@ class VladSolver2(offline_punter.OfflinePunter):
                 sc = (cnode.score + 0.0) / cnode.nsimul
                 opts.append( (sc, i) )
 
-            i = max(opts)[1]
-            (u,v) = root.vchild[i][0]   # best move (haha)
+            if 0 != len(opts):
+                i = max(opts)[1]
+                (u,v) = root.vchild[i][0]   # best move (haha)
+            else:
+                if 0 != len(self.free_edges):
+                    (u, v) = next(self.free_edges.iter())
+                else:
+                    return {'pass': {'punter': self.id}}
 
             if self.log:
                 pprint("MCTS {} /{}: nsimul {}; time {}; move: {}".format(
