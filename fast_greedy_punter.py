@@ -9,6 +9,7 @@ from graph_util import *
 from union_find_scores import *
 from client import *
 import graph_util
+from time import time
 
 def compute_score_slow(graph, mines, distances):
     total_score = 0
@@ -31,6 +32,7 @@ class FastGreedyPunter:
 
 
     def process_setup(self, data):
+        tt = time()
         if self.config.log:
             print("Processing setup:")
             pprint(data)
@@ -75,6 +77,7 @@ class FastGreedyPunter:
         #         "source": s,
         #         "target": t
         #     }
+        pprint(time() -tt)
         return reply
 
     def process_stop(self, data):
