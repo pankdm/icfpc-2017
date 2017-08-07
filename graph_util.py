@@ -1,4 +1,4 @@
-
+import time
 from collections import defaultdict, deque
 
 
@@ -41,19 +41,18 @@ class World:
 
 # runs bfs from the start and returns map of distances from it
 def run_bfs(start, graph):
-    q = deque()
-
-    q.append(start)
     result = {start : 0}
 
+    q = deque()
+    q.append(start)
     while q:
         cur = q.popleft()
         value = result[cur]
 
-        for next in graph.get(cur, set()):
-            if next not in result:
-                result[next] = value + 1
-                q.append(next)
+        for nxt in graph.get(cur, set()):
+            if nxt not in result:
+                result[nxt] = value + 1
+                q.append(nxt)
     return result
 
 # compute the scores to each city
@@ -66,24 +65,41 @@ def compute_distances(world):
             distances[city][mine] = score
     return distances
 
+c_timeout = 5
 
 # compute the scores to each city
 # map : city -> city -> score
 def compute_all_distances(world):
+    begin = time.clock()
     distances = defaultdict(dict)
     for mine in world.vertices:
+        distances[mine] = dict()
+    for mine in world.mines:
         scores = run_bfs(mine, world.graph)
         for city, score in scores.items():
             distances[city][mine] = score
+    for mine in world.vertices:
+        if time.clock() - begin > c_timeout:
+            break
+        if not mine in world.mines:
+            scores = run_bfs(mine, world.graph)
+            for city, score in scores.items():
+                distances[city][mine] = score
     return distances
 
-
 def compute_bridge_scores(world, all_distances):
+    begin = time.clock()
     result = {}
     for st, fs in world.graph.iteritems():
         for f in fs:
             result[ (st, f) ] = 0
             result[ (f, st) ] = 0
+
+    for st, fs in world.graph.iteritems():
+        if time.clock() - begin > c_timeout:
+            break
+
+        for f in fs:
             for mine in world.mines:
                 if mine in all_distances[st] and mine in all_distances[f]:
                     dst = all_distances[st][mine]
