@@ -57,8 +57,8 @@ def log_traceback(ex, ex_traceback=None):
 if __name__ == "__main__":
     try:
         begin = time.clock()
-        # punter = create_punter(FastGreedyOptions, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegressionOrDeepLearning", use_options=True)
-        punter = create_punter(MetaPunter, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegressionOrDeepLearning")
+        punter = create_punter(FastGreedyOptions, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegressionOrDeepLearning", use_options=True)
+        # punter = create_punter(MetaPunter, log=False, name="LinearMaxCappedFlowWithBridgesAndLogLossRegressionOrDeepLearning")
         hs = punter.get_handshake()
         writeOutputJson(hs)
         ack = readInputJson()
