@@ -295,6 +295,7 @@ class VladSolver2(offline_punter.OfflinePunter):
                 self.padj[id][v].append(u)
                 self.free_edges.discard( (u,v) )
                 self.free_edges.discard( (v,u) )
+                self.num_moves_left -= 1
             if 'splurge' in mv:
                 id = mv['splurge']['punter']
                 for i in range(1, len(mv['splurge']['route'])):
@@ -303,7 +304,7 @@ class VladSolver2(offline_punter.OfflinePunter):
                     self.padj[id][v].append(u)
                     self.free_edges.discard( (u,v) )
                     self.free_edges.discard( (v,u) )
-            self.num_moves_left -= 1
+                    self.num_moves_left -= 1
 
         has_move = False
         if self.num_moves_left > self.greedy_threshold:
