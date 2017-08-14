@@ -20,7 +20,7 @@ def run_bfs(start, graph):
             if nxt not in result:
                 result[nxt] = value + 1
                 q.append(nxt)
-    print 'In run_bfs counter = {}'.format(counter)
+    # print 'In run_bfs counter = {}'.format(counter)
     return result
 
 def run_slow_bfs(start, graph):
@@ -36,8 +36,9 @@ def run_slow_bfs(start, graph):
             result[cur] = value
         for nxt in graph.get(cur, set()):
             if nxt not in result:
+                result[nxt] = value + 1  # Magic Line
                 q.append((nxt, value + 1))
-    print 'In run_slow_bfs counter = {}'.format(counter)
+    # print 'In run_slow_bfs counter = {}'.format(counter)
     return result
 
 def run_with_timer(mines, graph, bfs):
